@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FreshMart - Sign Up</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #27ae60;
+      --primary-dark: #219150;
+      --primary-light: #2ecc71;
+      --bg: #f0faf4;
+      --card: #ffffff;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --border: #d1fae5;
+      --shadow: 0 20px 60px rgba(39,174,96,.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      color: var(--text);
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 0% 0%, rgba(39,174,96,.18) 0%, transparent 50%),
+        radial-gradient(ellipse at 100% 100%, rgba(46,204,113,.12) 0%, transparent 50%),
+        #f0faf4;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+      padding: .75rem 2rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 12px rgba(39,174,96,.3);
+    }
+    .topbar a {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: white;
+    }
+    .topbar-logo {
+      width: 36px; height: 36px;
+      background: rgba(255,255,255,.25);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 1rem; color: white;
+    }
+    .topbar span { font-size: 1.2rem; font-weight: 700; color: white; }
+
+    /* ── Layout ── */
+    .page {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: var(--shadow);
+      animation: fadeUp .4s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .card-icon {
+      width: 64px; height: 64px;
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      border-radius: 16px;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 1.8rem; color: white;
+      margin-bottom: 1rem;
+      box-shadow: 0 8px 20px rgba(39,174,96,.35);
+    }
+    .card-header h2 { font-size: 1.6rem; color: var(--text); margin-bottom: .3rem; }
+    .card-header p  { color: var(--muted); font-size: .95rem; }
+
+    /* Messages */
+    .error-msg {
+      background: #fef2f2; border: 1px solid #fecaca;
+      color: #dc2626; padding: .75rem 1rem;
+      border-radius: 8px; font-size: .9rem;
+      margin-bottom: 1rem; display: none;
+    }
+    .error-msg.show { display: block; }
+
+    .success-msg {
+      background: #f0fdf4; border: 1px solid #bbf7d0;
+      color: #16a34a; padding: .75rem 1rem;
+      border-radius: 8px; font-size: .9rem;
+      margin-bottom: 1rem; display: none;
+    }
+    .success-msg.show { display: block; }
+
+    /* Fields */
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .field { margin-bottom: 1.1rem; }
+    .field label {
+      display: block; font-size: .9rem; font-weight: 600;
+      color: #374151; margin-bottom: .45rem;
+    }
+    .input-wrap { position: relative; }
+    .input-wrap i {
+      position: absolute; left: 14px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted); font-size: .9rem;
+    }
+    .input-wrap input {
+      width: 100%;
+      padding: 11px 14px 11px 40px;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 10px; font-size: .97rem;
+      outline: none; transition: border-color .2s, box-shadow .2s;
+      background: #fafafa;
+    }
+    .input-wrap input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(39,174,96,.15);
+      background: white;
+    }
+
+    /* Password strength */
+    .pwd-strength { height: 4px; border-radius: 2px; margin-top: 6px; background: #e5e7eb; overflow: hidden; }
+    .pwd-strength-bar { height: 100%; width: 0; border-radius: 2px; transition: width .3s, background .3s; }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, #2ecc71, #27ae60);
+      color: white; border: none; padding: 14px;
+      border-radius: 10px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; margin-top: .5rem;
+      letter-spacing: .3px;
+      box-shadow: 0 4px 15px rgba(39,174,96,.3);
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(39,174,96,.4); }
+    .btn-primary:active { transform: translateY(0); }
+
+    .divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1.4rem 0; color: var(--muted); font-size: .85rem;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: #e5e7eb; }
+
+    .btn-secondary {
+      width: 100%; background: white; color: var(--text);
+      border: 1.5px solid #e5e7eb; padding: 13px;
+      border-radius: 10px; font-size: .95rem; font-weight: 600;
+      cursor: pointer; transition: all .2s; text-align: center;
+    }
+    .btn-secondary:hover { border-color: var(--primary); color: var(--primary); background: #f0fdf4; }
+
+    .footer-note {
+      text-align: center; margin-top: 1.5rem;
+      font-size: .83rem; color: var(--muted);
+    }
+    .footer-note a { color: var(--primary); text-decoration: none; }
+    .footer-note a:hover { text-decoration: underline; }
+
+    @media (max-width: 540px) { .row { grid-template-columns: 1fr; } }
+    @media (max-width: 480px) { .card { padding: 1.75rem; } }
+  </style>
+</head>
+<body>
+
+  <div class="topbar">
+    <a href="index.html">
+      <div class="topbar-logo"><i class="fas fa-shopping-cart"></i></div>
+      <span>FreshMart</span>
+    </a>
+  </div>
+
+  <div class="page">
+    <div class="card">
+
+      <div class="card-header">
+        <div class="card-icon"><i class="fas fa-user-plus"></i></div>
+        <h2>Create Account</h2>
+        <p>Join FreshMart for fresh groceries delivered daily</p>
+      </div>
+
+      <div class="error-msg" id="errorMsg"></div>
+      <div class="success-msg" id="successMsg"></div>
+
+      <form id="signupForm" autocomplete="on" novalidate>
+
+        <div class="row">
+          <div class="field">
+            <label for="firstName">First Name</label>
+            <div class="input-wrap">
+              <i class="fas fa-user"></i>
+              <input type="text" id="firstName" name="firstName"
+                placeholder="Rahul" required autocomplete="given-name" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="lastName">Last Name</label>
+            <div class="input-wrap">
+              <i class="fas fa-user"></i>
+              <input type="text" id="lastName" name="lastName"
+                placeholder="Sharma" required autocomplete="family-name" />
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="email">Email Address</label>
+          <div class="input-wrap">
+            <i class="fas fa-envelope"></i>
+            <input type="email" id="email" name="email"
+              placeholder="you@example.com" required autocomplete="username" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="phone">Phone Number (optional)</label>
+          <div class="input-wrap">
+            <i class="fas fa-phone"></i>
+            <input type="tel" id="phone" name="phone"
+              placeholder="+91 98765 43210" autocomplete="tel" />
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="field">
+            <label for="password">Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" name="password"
+                placeholder="Min. 6 characters" required autocomplete="new-password" />
+            </div>
+            <div class="pwd-strength"><div class="pwd-strength-bar" id="strengthBar"></div></div>
+          </div>
+          <div class="field">
+            <label for="confirmPassword">Confirm Password</label>
+            <div class="input-wrap">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="confirmPassword" name="confirmPassword"
+                placeholder="Repeat password" required autocomplete="new-password" />
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" id="signupBtn">
+          <i class="fas fa-user-plus"></i> Create Account
+        </button>
+
+      </form>
+
+      <div class="divider">already have an account?</div>
+
+      <button type="button" class="btn-secondary" onclick="location.href='login.html'">
+        <i class="fas fa-sign-in-alt"></i> Sign In Instead
+      </button>
+
+      <div class="footer-note">
+        By signing up you agree to our <a href="#">Terms</a> &amp; <a href="#">Privacy Policy</a>.
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // If already logged in, redirect to home
+    if (localStorage.getItem('fm_user')) {
+      window.location.href = 'index.html';
+    }
+
+    const form      = document.getElementById('signupForm');
+    const errorMsg  = document.getElementById('errorMsg');
+    const successMsg = document.getElementById('successMsg');
+    const signupBtn = document.getElementById('signupBtn');
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+      errorMsg.classList.add('show');
+      successMsg.classList.remove('show');
+    }
+
+    function showSuccess(msg) {
+      successMsg.textContent = msg;
+      successMsg.classList.add('show');
+      errorMsg.classList.remove('show');
+    }
+
+    // Password strength indicator
+    document.getElementById('password').addEventListener('input', function() {
+      const val = this.value;
+      const bar = document.getElementById('strengthBar');
+      let strength = 0;
+      if (val.length >= 6) strength++;
+      if (val.length >= 10) strength++;
+      if (/[A-Z]/.test(val)) strength++;
+      if (/[0-9]/.test(val)) strength++;
+      if (/[^A-Za-z0-9]/.test(val)) strength++;
+
+      const widths = ['0%','25%','50%','75%','100%'];
+      const colors = ['#e5e7eb','#ef4444','#f97316','#eab308','#22c55e'];
+      bar.style.width  = widths[strength];
+      bar.style.background = colors[strength];
+    });
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const firstName = document.getElementById('firstName').value.trim();
+      const lastName  = document.getElementById('lastName').value.trim();
+      const email     = document.getElementById('email').value.trim();
+      const phone     = document.getElementById('phone').value.trim();
+      const password  = document.getElementById('password').value;
+      const confirm   = document.getElementById('confirmPassword').value;
+
+      if (!firstName || !lastName || !email || !password) {
+        showError('Please fill in all required fields.');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters.');
+        return;
+      }
+
+      if (password !== confirm) {
+        showError('Passwords do not match. Please try again.');
+        return;
+      }
+
+      // Check email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        showError('Please enter a valid email address.');
+        return;
+      }
+
+      // Check if email already exists
+      const users = JSON.parse(localStorage.getItem('fm_users') || '[]');
+      if (users.find(u => u.email === email)) {
+        showError('This email is already registered. Please login instead.');
+        return;
+      }
+
+      // Save new user
+      users.push({ firstName, lastName, email, phone, password });
+      localStorage.setItem('fm_users', JSON.stringify(users));
+
+      // Auto login after signup
+      localStorage.setItem('fm_user', JSON.stringify({ name: firstName + ' ' + lastName, email }));
+
+      signupBtn.innerHTML = '<i class="fas fa-check"></i> Account Created!';
+      signupBtn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
+      showSuccess('Account created successfully! Redirecting to home...');
+
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1200);
+    });
+  </script>
+
+</body>
+</html>

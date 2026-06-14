@@ -1,0 +1,1512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart — Admin Panel</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+/* ── Reset & Base ── */
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+    --primary:      #27ae60;
+    --primary-dark: #219150;
+    --primary-light:#2ecc71;
+    --accent:       #e74c3c;
+    --gold:         #f39c12;
+    --blue:         #3498db;
+    --purple:       #9b59b6;
+    --sidebar-bg:   #1a202c;
+    --sidebar-w:    260px;
+    --header-h:     64px;
+    --text:         #1a202c;
+    --text-muted:   #718096;
+    --border:       #e2e8f0;
+    --bg:           #f7fafc;
+    --card:         #ffffff;
+    --radius:       12px;
+    --shadow:       0 2px 12px rgba(0,0,0,.08);
+    --transition:   all .2s ease;
+}
+html { scroll-behavior:smooth; }
+body {
+    font-family:'Inter','Segoe UI',system-ui,sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+
+/* ═══════════════════════
+   LOGIN SCREEN
+═══════════════════════ */
+#loginScreen {
+    min-height:100vh; display:flex;
+    align-items:center; justify-content:center;
+    background:linear-gradient(135deg,#1a202c 0%,#2d3748 50%,#1a7a45 100%);
+}
+.login-card {
+    background:white; border-radius:20px;
+    padding:2.5rem; width:100%; max-width:400px;
+    box-shadow:0 30px 80px rgba(0,0,0,.4);
+    animation:fadeUp .4s ease;
+}
+@keyframes fadeUp {
+    from{opacity:0;transform:translateY(20px);}
+    to  {opacity:1;transform:translateY(0);}
+}
+.login-logo { text-align:center; margin-bottom:2rem; }
+.login-logo-icon {
+    width:70px; height:70px;
+    background:linear-gradient(135deg,#2ecc71,#27ae60);
+    border-radius:18px; display:inline-flex;
+    align-items:center; justify-content:center;
+    font-size:2rem; color:white; margin-bottom:1rem;
+    box-shadow:0 10px 30px rgba(39,174,96,.4);
+}
+.login-logo h1 { font-size:1.4rem; font-weight:800; color:var(--text); }
+.login-logo p  { color:var(--text-muted); font-size:.9rem; margin-top:.2rem; }
+.login-title {
+    font-size:1.1rem; font-weight:700; margin-bottom:1.4rem;
+    color:var(--text); display:flex; align-items:center; gap:8px;
+}
+.login-title i { color:var(--primary); }
+.login-field { margin-bottom:1.1rem; }
+.login-field label { display:block; font-size:.88rem; font-weight:700; color:#374151; margin-bottom:.4rem; }
+.login-input-wrap { position:relative; }
+.login-input-wrap i { position:absolute; left:13px; top:50%; transform:translateY(-50%); color:#aaa; font-size:.9rem; pointer-events:none; }
+.login-input-wrap input {
+    width:100%; padding:12px 13px 12px 38px;
+    border:1.5px solid #e5e7eb; border-radius:10px;
+    font-size:.97rem; outline:none;
+    transition:border-color .2s,box-shadow .2s;
+    background:#fafafa; color:var(--text);
+}
+.login-input-wrap input:focus {
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(39,174,96,.12);
+    background:white;
+}
+.login-err {
+    background:#fef2f2; border:1px solid #fecaca;
+    color:#dc2626; padding:.65rem 1rem; border-radius:8px;
+    font-size:.88rem; margin-bottom:1rem; display:none;
+}
+.login-err.show { display:block; }
+.login-btn {
+    width:100%; background:linear-gradient(135deg,#2ecc71,#27ae60);
+    color:white; border:none; padding:14px; border-radius:10px;
+    font-size:1rem; font-weight:700; cursor:pointer; transition:all .2s;
+    box-shadow:0 4px 15px rgba(39,174,96,.3);
+}
+.login-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(39,174,96,.4); }
+.login-back { text-align:center; margin-top:1.2rem; }
+.login-back a { color:var(--primary); text-decoration:none; font-size:.88rem; font-weight:600; }
+.login-back a:hover { text-decoration:underline; }
+.cred-hint {
+    margin-top:1.2rem; padding:.8rem; background:#f0fdf4;
+    border-radius:8px; font-size:.8rem; color:#374151;
+    text-align:center; border:1px solid #c6f6d5;
+}
+.cred-hint code { background:#dcfce7; padding:1px 5px; border-radius:4px; font-size:.82rem; }
+.cred-also      { color:#6b7280; }
+
+/* ═══════════════════════
+   APP LAYOUT
+═══════════════════════ */
+#adminApp { display:none; min-height:100vh; }
+
+/* Sidebar */
+.sidebar {
+    position:fixed; top:0; left:0;
+    width:var(--sidebar-w); height:100vh;
+    background:var(--sidebar-bg); display:flex;
+    flex-direction:column; z-index:100;
+    transition:transform .3s ease; overflow-y:auto;
+}
+.sidebar-brand {
+    padding:1.5rem 1.4rem; display:flex; align-items:center; gap:12px;
+    border-bottom:1px solid rgba(255,255,255,.08);
+}
+.sidebar-brand-icon {
+    width:42px; height:42px; background:linear-gradient(135deg,#2ecc71,#27ae60);
+    border-radius:10px; display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem; color:white; flex-shrink:0;
+}
+.sidebar-brand-text strong { display:block; color:white; font-size:1rem; font-weight:800; }
+.sidebar-brand-text span   { color:#68d391; font-size:.75rem; font-weight:600; letter-spacing:.5px; text-transform:uppercase; }
+.sidebar-nav { flex:1; padding:1rem 0; }
+.nav-section-label {
+    padding:.6rem 1.4rem .3rem; font-size:.7rem; font-weight:700;
+    color:rgba(255,255,255,.35); text-transform:uppercase; letter-spacing:1px;
+}
+.nav-section-gap { margin-top:.8rem; }
+.sidebar-link {
+    display:flex; align-items:center; gap:12px; padding:.75rem 1.4rem;
+    color:rgba(255,255,255,.7); text-decoration:none; font-size:.9rem; font-weight:600;
+    transition:all .2s; cursor:pointer; border:none; background:none; width:100%;
+    text-align:left; border-left:3px solid transparent;
+}
+.sidebar-link i { width:20px; text-align:center; font-size:.95rem; }
+.sidebar-link:hover { background:rgba(255,255,255,.06); color:white; }
+.sidebar-link.active {
+    background:rgba(46,204,113,.15); color:#68d391; border-left-color:#2ecc71;
+}
+.sidebar-link .badge {
+    margin-left:auto; background:var(--accent); color:white;
+    border-radius:20px; padding:2px 8px; font-size:.72rem; font-weight:700;
+}
+.sidebar-link .badge.green { background:var(--primary); }
+.sidebar-footer {
+    padding:1rem 1.4rem; border-top:1px solid rgba(255,255,255,.08);
+}
+.admin-profile {
+    display:flex; align-items:center; gap:10px; padding:.6rem .8rem;
+    border-radius:10px; background:rgba(255,255,255,.06);
+}
+.admin-avatar {
+    width:36px; height:36px; background:linear-gradient(135deg,#2ecc71,#27ae60);
+    border-radius:50%; display:flex; align-items:center; justify-content:center;
+    font-weight:800; font-size:.9rem; color:white; flex-shrink:0;
+}
+.admin-info strong { display:block; color:white; font-size:.88rem; }
+.admin-info span   { color:rgba(255,255,255,.5); font-size:.75rem; }
+.logout-icon-btn {
+    margin-left:auto; background:rgba(231,76,60,.2); border:none; color:#fc8181;
+    width:30px; height:30px; border-radius:8px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:all .2s; font-size:.85rem;
+}
+.logout-icon-btn:hover { background:rgba(231,76,60,.4); }
+
+/* Header */
+.main-header {
+    position:fixed; top:0; left:var(--sidebar-w); right:0;
+    height:var(--header-h); background:white;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; padding:0 1.8rem; gap:1rem;
+    z-index:90; box-shadow:0 1px 8px rgba(0,0,0,.05);
+}
+#pageTitle { font-size:1.15rem; font-weight:800; color:var(--text); }
+.header-right { margin-left:auto; display:flex; align-items:center; gap:12px; }
+.header-btn {
+    background:none; border:1.5px solid var(--border); padding:7px 14px;
+    border-radius:8px; font-size:.85rem; font-weight:600; cursor:pointer;
+    color:var(--text); transition:all .2s; display:flex; align-items:center; gap:6px;
+}
+.header-btn:hover { border-color:var(--primary); color:var(--primary); background:#f0fdf4; }
+.header-store-link {
+    background:linear-gradient(135deg,#2ecc71,#27ae60); color:white; border:none;
+    padding:8px 16px; border-radius:8px; font-size:.88rem; font-weight:700;
+    cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:6px;
+    transition:all .2s;
+}
+.header-store-link:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(39,174,96,.3); }
+.mobile-menu-btn {
+    display:none; background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--text);
+}
+
+/* Main content */
+.main-content {
+    margin-left:var(--sidebar-w); margin-top:var(--header-h);
+    padding:2rem; min-height:calc(100vh - var(--header-h));
+}
+
+/* Page sections */
+.page-section { display:none; }
+.page-section.active { display:block; animation:fadeIn .25s ease; }
+@keyframes fadeIn {
+    from{opacity:0;transform:translateY(8px);}
+    to  {opacity:1;transform:translateY(0);}
+}
+
+/* Card */
+.card {
+    background:var(--card); border-radius:var(--radius);
+    border:1px solid var(--border); box-shadow:var(--shadow);
+}
+.card-padded { padding:1.4rem; }
+
+/* Dashboard grid */
+.dashboard-grid {
+    display:grid; grid-template-columns:1.6fr 1fr;
+    gap:1.2rem; margin-bottom:1.5rem;
+}
+
+/* Stats */
+.stats-grid {
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:1.2rem; margin-bottom:1.8rem;
+}
+.stat-card {
+    background:var(--card); border-radius:var(--radius);
+    border:1px solid var(--border); padding:1.4rem 1.6rem;
+    display:flex; align-items:center; gap:1.2rem;
+    box-shadow:var(--shadow); transition:all .2s;
+}
+.stat-card:hover { transform:translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+.stat-icon {
+    width:54px; height:54px; border-radius:14px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.4rem; flex-shrink:0;
+}
+.stat-icon.green  { background:#f0fdf4; color:var(--primary); }
+.stat-icon.red    { background:#fff5f5; color:var(--accent);  }
+.stat-icon.blue   { background:#eff6ff; color:var(--blue);    }
+.stat-icon.gold   { background:#fffbeb; color:var(--gold);    }
+.stat-icon.purple { background:#faf5ff; color:var(--purple);  }
+.stat-info strong { display:block; font-size:1.7rem; font-weight:800; color:var(--text); line-height:1; }
+.stat-info span   { font-size:.82rem; color:var(--text-muted); font-weight:500; margin-top:.25rem; display:block; }
+
+/* Section header */
+.section-header {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:1rem; margin-bottom:1.2rem; flex-wrap:wrap;
+}
+.section-header h3 { font-size:1.05rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:7px; }
+.icon-primary { color:var(--primary); }
+.icon-gold    { color:var(--gold);    }
+.icon-blue    { color:var(--blue);    }
+
+/* Filter bar */
+.filter-bar {
+    display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; margin-bottom:1.2rem;
+}
+.search-input-wrap { position:relative; flex:1; min-width:200px; }
+.search-input-wrap i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#aaa; font-size:.9rem; }
+.search-input-wrap input {
+    width:100%; padding:9px 12px 9px 36px; border:1.5px solid var(--border);
+    border-radius:9px; font-size:.9rem; outline:none; background:white; transition:border-color .2s;
+}
+.search-input-wrap input:focus { border-color:var(--primary); }
+.filter-select {
+    padding:9px 12px; border:1.5px solid var(--border); border-radius:9px;
+    font-size:.88rem; background:white; outline:none; cursor:pointer;
+    color:var(--text); min-width:140px;
+}
+.filter-select:focus { border-color:var(--primary); }
+
+/* Table */
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.88rem; }
+thead tr { background:#f8fafc; border-bottom:2px solid var(--border); }
+th {
+    padding:.85rem 1rem; text-align:left; font-size:.78rem; font-weight:800;
+    color:var(--text-muted); text-transform:uppercase; letter-spacing:.6px; white-space:nowrap;
+}
+td { padding:.9rem 1rem; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
+tbody tr:hover { background:#f8fffe; }
+tbody tr:last-child td { border-bottom:none; }
+.td-muted { color:var(--text-muted); font-size:.82rem; }
+.td-small { font-size:.8rem; white-space:nowrap; }
+.td-bold  { font-weight:700; font-size:.88rem; }
+.td-id    { font-weight:700; font-size:.82rem; }
+.td-wrap  { max-width:200px; }
+.td-name  { font-weight:700; font-size:.88rem; }
+.td-sub   { font-size:.76rem; color:var(--text-muted); }
+.td-maxw  { max-width:130px; font-size:.8rem; color:var(--text-muted); }
+
+/* Status badges */
+.status-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:4px 10px; border-radius:20px; font-size:.78rem; font-weight:700; white-space:nowrap;
+}
+.status-badge::before {
+    content:''; width:6px; height:6px; border-radius:50%;
+    background:currentColor; flex-shrink:0;
+}
+.status-pending   { background:#fffbeb; color:#d97706; }
+.status-confirmed { background:#eff6ff; color:#2563eb; }
+.status-preparing { background:#faf5ff; color:#7c3aed; }
+.status-shipped   { background:#fff7ed; color:#c2410c; }
+.status-delivered { background:#f0fdf4; color:#16a34a; }
+.status-cancelled { background:#fef2f2; color:#dc2626; }
+
+/* Action buttons */
+.action-btn {
+    padding:5px 10px; border-radius:7px; font-size:.78rem; font-weight:700;
+    cursor:pointer; border:none; transition:all .15s;
+    display:inline-flex; align-items:center; gap:4px;
+}
+.btn-view   { background:#eff6ff; color:#2563eb; }
+.btn-view:hover   { background:#dbeafe; }
+.btn-edit   { background:#f0fdf4; color:var(--primary-dark); }
+.btn-edit:hover   { background:#dcfce7; }
+.btn-delete { background:#fef2f2; color:var(--accent); }
+.btn-delete:hover { background:#fee2e2; }
+.btn-ml { margin-left:4px; }
+
+/* Customer profile cell */
+.cust-profile { display:flex; align-items:center; gap:10px; }
+.cust-avatar {
+    width:34px; height:34px; border-radius:50%;
+    background:linear-gradient(135deg,#2ecc71,#27ae60);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.8rem; font-weight:800; color:white; flex-shrink:0;
+}
+.cust-name  { font-weight:700; font-size:.88rem; }
+.cust-email { font-size:.78rem; color:var(--text-muted); }
+
+/* Product category badge */
+.cat-badge {
+    padding:3px 10px; border-radius:12px; font-size:.78rem; font-weight:700; text-transform:capitalize;
+}
+.cat-fruits     { background:#dcfce7; color:#16a34a; }
+.cat-vegetables { background:#d1fae5; color:#065f46; }
+.cat-dairy      { background:#dbeafe; color:#1d4ed8; }
+.cat-meat       { background:#fee2e2; color:#b91c1c; }
+.cat-bakery     { background:#fef3c7; color:#92400e; }
+.cat-beverages  { background:#ede9fe; color:#5b21b6; }
+
+/* Stock color */
+.stock-ok   { font-weight:700; font-size:.88rem; color:#16a34a; }
+.stock-low  { font-weight:700; font-size:.88rem; color:#d97706; }
+.stock-out  { font-weight:700; font-size:.88rem; color:#dc2626; }
+
+/* Payment badge */
+.pay-badge {
+    padding:3px 8px; border-radius:12px; font-size:.77rem; font-weight:700;
+}
+.pay-cod { background:#fffbeb; color:#d97706; }
+.pay-upi { background:#eff6ff; color:#2563eb; }
+.pay-card { background:#f0fdf4; color:#16a34a; }
+.pay-net  { background:#faf5ff; color:#7c3aed; }
+
+/* Delivery quick-select */
+.status-quick-select {
+    padding:5px 8px; border:1.5px solid var(--border); border-radius:7px;
+    font-size:.78rem; background:white; cursor:pointer; outline:none;
+}
+.status-quick-select:focus { border-color:var(--primary); }
+
+/* Order detail modal */
+.od-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    padding:1rem;
+    -webkit-backdrop-filter:blur(3px);
+    backdrop-filter:blur(3px);
+}
+.od-box {
+    background:white; border-radius:18px; width:100%; max-width:680px;
+    max-height:90vh; overflow-y:auto;
+    box-shadow:0 25px 80px rgba(0,0,0,.25); animation:slideUp .3s ease;
+}
+@keyframes slideUp {
+    from{transform:translateY(20px);opacity:0;}
+    to  {transform:translateY(0);opacity:1;}
+}
+.od-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.3rem 1.6rem; border-bottom:1px solid var(--border);
+    background:linear-gradient(135deg,#f0fdf4,white);
+    border-radius:18px 18px 0 0; position:sticky; top:0; z-index:1;
+}
+.od-header h3 { font-size:1.1rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+.od-header h3 i { color:var(--primary); }
+.od-close {
+    background:#fee2e2; border:none; width:34px; height:34px; border-radius:8px;
+    cursor:pointer; color:var(--accent); display:flex; align-items:center;
+    justify-content:center; font-size:.95rem; transition:all .2s;
+}
+.od-close:hover { background:#fecaca; }
+.od-body { padding:1.5rem 1.6rem; }
+.od-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+.od-full { grid-column:1 / -1; }
+.od-info-card {
+    background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:1rem;
+}
+.od-info-card h4 {
+    font-size:.78rem; font-weight:800; text-transform:uppercase; letter-spacing:.5px;
+    color:var(--text-muted); margin-bottom:.7rem; display:flex; align-items:center; gap:5px;
+}
+.od-info-card h4 i { color:var(--primary); }
+.od-info-card p  { font-size:.88rem; color:var(--text); margin-bottom:.35rem; line-height:1.5; }
+.od-info-card p i { width:14px; color:var(--text-muted); margin-right:4px; }
+.od-items-table { width:100%; border-collapse:collapse; font-size:.87rem; margin-bottom:1rem; }
+.od-items-table th { padding:.6rem .8rem; background:#f8fafc; text-align:left; font-weight:700; font-size:.78rem; color:var(--text-muted); }
+.od-items-table td { padding:.7rem .8rem; border-top:1px solid #f1f5f9; }
+.od-item-subtotal { font-weight:800; color:var(--primary-dark); }
+.od-totals { background:#f8fafc; border-radius:10px; padding:1rem; }
+.od-total-row {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:.35rem 0; font-size:.88rem; color:var(--text-muted);
+}
+.od-total-row.grand {
+    border-top:2px dashed var(--border); margin-top:.5rem; padding-top:.6rem;
+    color:var(--text); font-weight:800; font-size:1rem;
+}
+.od-status-update {
+    margin-top:1.2rem; padding:1rem; background:#f0fdf4;
+    border:1px solid #c6f6d5; border-radius:10px;
+    display:flex; align-items:center; gap:.8rem; flex-wrap:wrap;
+}
+.od-status-label { font-size:.88rem; font-weight:700; color:var(--primary-dark); white-space:nowrap; }
+.od-status-select {
+    padding:8px 12px; border:1.5px solid #c6f6d5; border-radius:8px;
+    font-size:.88rem; outline:none; background:white; color:var(--text); flex:1; min-width:160px;
+}
+.od-status-select:focus { border-color:var(--primary); }
+.od-update-btn {
+    background:linear-gradient(135deg,#2ecc71,#27ae60); color:white; border:none;
+    padding:9px 18px; border-radius:8px; font-weight:700; font-size:.88rem;
+    cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:6px;
+}
+.od-update-btn:hover { transform:translateY(-1px); box-shadow:0 4px 12px rgba(39,174,96,.3); }
+
+/* Empty state */
+.empty-admin { text-align:center; padding:4rem 2rem; color:var(--text-muted); }
+.empty-admin i { font-size:2.5rem; margin-bottom:.6rem; color:#cbd5e0; display:block; }
+.empty-admin h3 { font-size:1rem; color:#4a5568; margin-bottom:.3rem; }
+
+/* Pagination */
+.pagination { display:flex; align-items:center; justify-content:center; gap:6px; margin-top:1.2rem; }
+.page-btn {
+    width:34px; height:34px; border-radius:8px; border:1.5px solid var(--border);
+    background:white; cursor:pointer; font-size:.88rem; font-weight:600;
+    color:var(--text); transition:all .15s;
+    display:flex; align-items:center; justify-content:center;
+}
+.page-btn:hover, .page-btn.active { background:var(--primary); color:white; border-color:var(--primary); }
+
+/* Toast */
+.admin-toast {
+    position:fixed; bottom:24px; right:24px; background:#1a202c; color:white;
+    padding:12px 18px; border-radius:10px; font-size:.88rem; font-weight:600;
+    box-shadow:0 8px 24px rgba(0,0,0,.25); z-index:9999;
+    transform:translateY(80px); opacity:0;
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);
+    display:flex; align-items:center; gap:8px;
+}
+.admin-toast.show    { transform:translateY(0); opacity:1; }
+.admin-toast.success { background:linear-gradient(135deg,#2ecc71,#27ae60); }
+.admin-toast.error   { background:linear-gradient(135deg,#e74c3c,#c0392b); }
+
+/* Status chart bars */
+.chart-row { margin-bottom:.7rem; }
+.chart-label { display:flex; justify-content:space-between; font-size:.82rem; margin-bottom:.25rem; }
+.chart-label-name  { font-weight:600; }
+.chart-label-count { font-weight:800; color:var(--text); }
+.chart-bar-bg { background:#f1f5f9; border-radius:4px; height:10px; overflow:hidden; }
+.chart-bar    { height:100%; border-radius:4px; transition:width .6s ease; }
+
+/* Customer orders modal table */
+.cust-orders-table { width:100%; border-collapse:collapse; font-size:.87rem; }
+.cust-orders-table th { padding:.7rem; text-align:left; font-size:.75rem; color:#718096; text-transform:uppercase; background:#f8fafc; }
+.cust-orders-table td { padding:.7rem; border-top:1px solid #f1f5f9; }
+
+/* Responsive */
+.sidebar-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.5); z-index:99;
+}
+@media (max-width:900px) { .stats-grid { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:768px) {
+    .sidebar { transform:translateX(-100%); }
+    .sidebar.open { transform:translateX(0); }
+    .sidebar-overlay { display:block; }
+    .main-header { left:0; }
+    .main-content { margin-left:0; padding:1rem; }
+    .mobile-menu-btn { display:block; }
+    .od-grid { grid-template-columns:1fr; }
+    .dashboard-grid { grid-template-columns:1fr; }
+}
+@media (max-width:500px) {
+    .stats-grid { grid-template-columns:1fr 1fr; gap:.8rem; }
+    .stat-card { padding:1rem; gap:.8rem; }
+    .stat-info strong { font-size:1.4rem; }
+}
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════════════
+     LOGIN SCREEN
+═══════════════════════ -->
+<div id="loginScreen">
+    <div class="login-card">
+        <div class="login-logo">
+            <div class="login-logo-icon"><i class="fas fa-shopping-cart"></i></div>
+            <h1>FreshMart</h1>
+            <p>Admin Dashboard</p>
+        </div>
+
+        <p class="login-title"><i class="fas fa-shield-alt"></i> Admin Login</p>
+
+        <div class="login-err" id="loginErr"></div>
+
+        <form id="adminLoginForm" novalidate>
+            <div class="login-field">
+                <label for="adminEmail">Email</label>
+                <div class="login-input-wrap">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="adminEmail" placeholder="admin@freshmart.com"
+                           required autocomplete="username">
+                </div>
+            </div>
+            <div class="login-field">
+                <label for="adminPass">Password</label>
+                <div class="login-input-wrap">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="adminPass" placeholder="••••••••"
+                           required autocomplete="current-password">
+                </div>
+            </div>
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i> Sign In to Admin Panel
+            </button>
+        </form>
+
+        <div class="login-back">
+            <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Store</a>
+        </div>
+
+        <div class="cred-hint">
+            <strong>🔐 Admin Login Credentials</strong><br><br>
+            <strong>Email 1:</strong> <code>admin@freshmart.com</code><br>
+            <strong>Email 2:</strong> <code>hn878283@gmail.com</code><br>
+            <strong>Email 3:</strong> <code>princenigam972@gmail.com</code><br><br>
+            <strong>Password (sabke liye):</strong> <code>admin123</code>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════
+     ADMIN APP
+═══════════════════════ -->
+<div id="adminApp">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-brand">
+            <div class="sidebar-brand-icon"><i class="fas fa-shopping-cart"></i></div>
+            <div class="sidebar-brand-text">
+                <strong>FreshMart</strong>
+                <span>Admin Panel</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <div class="nav-section-label">Main</div>
+            <button type="button" class="sidebar-link active" data-page="dashboard">
+                <i class="fas fa-tachometer-alt"></i> Dashboard
+            </button>
+            <button type="button" class="sidebar-link" data-page="orders">
+                <i class="fas fa-shopping-bag"></i> Orders
+                <span class="badge" id="pendingBadge">0</span>
+            </button>
+            <button type="button" class="sidebar-link" data-page="customers">
+                <i class="fas fa-users"></i> Customers
+            </button>
+
+            <div class="nav-section-label nav-section-gap">Delivery</div>
+            <button type="button" class="sidebar-link" data-page="delivery">
+                <i class="fas fa-truck"></i> Delivery Tracker
+                <span class="badge green" id="activeBadge">0</span>
+            </button>
+
+            <div class="nav-section-label nav-section-gap">Store</div>
+            <button type="button" class="sidebar-link" data-page="products">
+                <i class="fas fa-box-open"></i> Products
+            </button>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="admin-profile">
+                <div class="admin-avatar" id="sidebarInitials">A</div>
+                <div class="admin-info">
+                    <strong id="sidebarAdminName">Admin</strong>
+                    <span id="sidebarAdminEmail">admin@freshmart.com</span>
+                </div>
+                <button type="button" class="logout-icon-btn" id="adminLogout" aria-label="Logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Sidebar overlay (mobile) -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Top Header -->
+    <header class="main-header">
+        <button type="button" class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Open menu">
+            <i class="fas fa-bars"></i>
+        </button>
+        <span id="pageTitle">Dashboard</span>
+        <div class="header-right">
+            <button type="button" class="header-btn" id="refreshBtn">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <a href="index.html" class="header-store-link">
+                <i class="fas fa-store"></i> View Store
+            </a>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <!-- DASHBOARD -->
+        <section class="page-section active" id="page-dashboard">
+            <div class="stats-grid" id="statsGrid"></div>
+
+            <div class="dashboard-grid">
+                <div class="card card-padded">
+                    <div class="section-header">
+                        <h3><i class="fas fa-clock icon-primary"></i> Recent Orders</h3>
+                        <button type="button" class="action-btn btn-view" onclick="showPage('orders')">View All</button>
+                    </div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr>
+                                <th>Order ID</th><th>Customer</th><th>Amount</th><th>Status</th>
+                            </tr></thead>
+                            <tbody id="recentOrdersTbody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card card-padded">
+                    <div class="section-header">
+                        <h3><i class="fas fa-chart-pie icon-gold"></i> Order Status</h3>
+                    </div>
+                    <div id="statusChart"></div>
+                </div>
+            </div>
+
+            <div class="card card-padded">
+                <div class="section-header">
+                    <h3><i class="fas fa-truck icon-blue"></i> Today's Deliveries</h3>
+                </div>
+                <div class="table-wrap">
+                    <table id="todayDeliveryTable">
+                        <thead><tr>
+                            <th>Order ID</th><th>Customer</th><th>Address</th>
+                            <th>Items</th><th>Amount</th><th>Payment</th><th>Status</th><th>Action</th>
+                        </tr></thead>
+                        <tbody id="todayDeliveryTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- ORDERS -->
+        <section class="page-section" id="page-orders">
+            <div class="filter-bar">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="orderSearch" placeholder="Search Order ID, customer, phone...">
+                </div>
+                <select class="filter-select" id="orderStatusFilter">
+                    <option value="">All Statuses</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Preparing">Preparing</option>
+                    <option value="Shipped">Shipped</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+                <select class="filter-select" id="orderPayFilter">
+                    <option value="">All Payments</option>
+                    <option value="COD">COD</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                    <option value="NetBanking">Net Banking</option>
+                </select>
+                <button type="button" class="header-btn" id="clearOrdersFilter">
+                    <i class="fas fa-times"></i> Clear
+                </button>
+            </div>
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>#</th><th>Order ID</th><th>Date &amp; Time</th>
+                            <th>Customer</th><th>Phone</th><th>Items</th>
+                            <th>Total</th><th>Payment</th><th>Status</th><th>Action</th>
+                        </tr></thead>
+                        <tbody id="ordersTbody"></tbody>
+                    </table>
+                </div>
+                <div class="pagination" id="ordersPagination"></div>
+            </div>
+        </section>
+
+        <!-- CUSTOMERS -->
+        <section class="page-section" id="page-customers">
+            <div class="filter-bar">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="customerSearch" placeholder="Search by name or email...">
+                </div>
+            </div>
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>#</th><th>Customer</th><th>Phone</th>
+                            <th>Total Orders</th><th>Total Spent</th><th>Last Order</th><th>Action</th>
+                        </tr></thead>
+                        <tbody id="customersTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- DELIVERY TRACKER -->
+        <section class="page-section" id="page-delivery">
+            <div class="filter-bar">
+                <select class="filter-select" id="deliveryStatusFilter">
+                    <option value="">All Active (not delivered)</option>
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Preparing">Preparing</option>
+                    <option value="Shipped">Out for Delivery</option>
+                </select>
+            </div>
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>Order ID</th><th>Customer</th><th>Phone</th>
+                            <th>Full Address</th><th>Landmark</th><th>PIN</th>
+                            <th>Items</th><th>Amount</th><th>Payment</th>
+                            <th>Notes</th><th>Status</th><th>Update</th>
+                        </tr></thead>
+                        <tbody id="deliveryTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCTS -->
+        <section class="page-section" id="page-products">
+            <div class="filter-bar">
+                <div class="search-input-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="productSearch" placeholder="Search products...">
+                </div>
+                <select class="filter-select" id="productCatFilter">
+                    <option value="">All Categories</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="vegetables">Vegetables</option>
+                    <option value="dairy">Dairy</option>
+                    <option value="meat">Meat</option>
+                    <option value="bakery">Bakery</option>
+                    <option value="beverages">Beverages</option>
+                </select>
+            </div>
+            <div class="card">
+                <div class="table-wrap">
+                    <table>
+                        <thead><tr>
+                            <th>#</th><th>Product</th><th>Category</th>
+                            <th>Price</th><th>Unit</th><th>Rating</th><th>Stock</th><th>Status</th>
+                        </tr></thead>
+                        <tbody id="productsTbody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<!-- Order Detail Modal container -->
+<div id="orderDetailModal" hidden></div>
+
+<!-- Toast -->
+<div class="admin-toast" id="adminToast" role="status" aria-live="polite"></div>
+
+<script>
+// ============================================================
+//  FreshMart Admin — JavaScript
+// ============================================================
+
+// ── Admin credentials — multiple admins supported ──────────
+const ADMIN_ACCOUNTS = [
+    { email: 'admin@freshmart.com',  password: 'admin123',   name: 'Admin' },
+    { email: 'hn878283@gmail.com',   password: 'admin123',   name: 'HN Admin' },
+    { email: 'princenigam972@gmail.com', password: 'admin123', name: 'Prince' }
+];
+
+const ITEMS_PER_PAGE = 10;
+
+// ── Products list ─────────────────────────────────────────
+const PRODUCTS = [
+    { id:1,  name:'Fresh Apples',     category:'fruits',     price:248, unit:'kg',      rating:4.5, stock:50 },
+    { id:2,  name:'Bananas',          category:'fruits',     price:165, unit:'dozen',   rating:4.3, stock:30 },
+    { id:3,  name:'Oranges',          category:'fruits',     price:290, unit:'kg',      rating:4.4, stock:25 },
+    { id:4,  name:'Strawberries',     category:'fruits',     price:414, unit:'250g',    rating:4.6, stock:20 },
+    { id:5,  name:'Grapes',           category:'fruits',     price:331, unit:'kg',      rating:4.2, stock:15 },
+    { id:6,  name:'Watermelon',       category:'fruits',     price:497, unit:'piece',   rating:4.7, stock:10 },
+    { id:31, name:'Mango',            category:'fruits',     price:380, unit:'kg',      rating:4.8, stock:18 },
+    { id:32, name:'Pineapple',        category:'fruits',     price:299, unit:'piece',   rating:4.4, stock:12 },
+    { id:7,  name:'Carrots',          category:'vegetables', price:124, unit:'kg',      rating:4.1, stock:40 },
+    { id:8,  name:'Tomatoes',         category:'vegetables', price:207, unit:'kg',      rating:4.3, stock:35 },
+    { id:9,  name:'Lettuce',          category:'vegetables', price:165, unit:'bunch',   rating:4.0, stock:25 },
+    { id:10, name:'Broccoli',         category:'vegetables', price:248, unit:'piece',   rating:4.2, stock:20 },
+    { id:11, name:'Potatoes',         category:'vegetables', price:165, unit:'kg',      rating:4.4, stock:30 },
+    { id:12, name:'Onions',           category:'vegetables', price:107, unit:'kg',      rating:4.1, stock:45 },
+    { id:33, name:'Spinach',          category:'vegetables', price:99,  unit:'bunch',   rating:4.3, stock:22 },
+    { id:34, name:'Bell Pepper',      category:'vegetables', price:280, unit:'pack',    rating:4.2, stock:18 },
+    { id:13, name:'Fresh Milk',       category:'dairy',      price:290, unit:'litre',   rating:4.5, stock:20 },
+    { id:14, name:'Cheese',           category:'dairy',      price:414, unit:'200g',    rating:4.3, stock:15 },
+    { id:15, name:'Yogurt',           category:'dairy',      price:248, unit:'400g',    rating:4.2, stock:25 },
+    { id:16, name:'Butter',           category:'dairy',      price:331, unit:'100g',    rating:4.4, stock:18 },
+    { id:17, name:'Eggs',             category:'dairy',      price:207, unit:'12 pcs',  rating:4.6, stock:30 },
+    { id:18, name:'Chicken Breast',   category:'meat',       price:580, unit:'kg',      rating:4.5, stock:12 },
+    { id:19, name:'Ground Beef',      category:'meat',       price:497, unit:'500g',    rating:4.3, stock:10 },
+    { id:20, name:'Salmon Fillet',    category:'meat',       price:747, unit:'500g',    rating:4.7, stock:8  },
+    { id:21, name:'Pork Chops',       category:'meat',       price:456, unit:'kg',      rating:4.2, stock:15 },
+    { id:22, name:'Fresh Bread',      category:'bakery',     price:248, unit:'loaf',    rating:4.4, stock:20 },
+    { id:23, name:'Croissants',       category:'bakery',     price:331, unit:'4 pcs',   rating:4.6, stock:15 },
+    { id:24, name:'Muffins',          category:'bakery',     price:207, unit:'6 pcs',   rating:4.3, stock:18 },
+    { id:25, name:'Bagels',           category:'bakery',     price:290, unit:'4 pcs',   rating:4.2, stock:12 },
+    { id:35, name:'Whole Wheat Roti', category:'bakery',     price:149, unit:'10 pcs',  rating:4.5, stock:25 },
+    { id:26, name:'Orange Juice',     category:'beverages',  price:331, unit:'1L',      rating:4.3, stock:25 },
+    { id:27, name:'Coffee',           category:'beverages',  price:414, unit:'250g',    rating:4.5, stock:20 },
+    { id:28, name:'Green Tea',        category:'beverages',  price:248, unit:'25 bags', rating:4.2, stock:30 },
+    { id:29, name:'Sparkling Water',  category:'beverages',  price:165, unit:'1L',      rating:4.1, stock:35 },
+    { id:30, name:'Energy Drink',     category:'beverages',  price:207, unit:'250ml',   rating:3.9, stock:22 },
+    { id:36, name:'Mango Lassi',      category:'beverages',  price:199, unit:'500ml',   rating:4.6, stock:16 }
+];
+
+// ── State ─────────────────────────────────────────────────
+let currentPage  = 'dashboard';
+let ordersPage   = 1;
+let currentAdmin = null;
+
+// ── Helpers ───────────────────────────────────────────────
+const getOrders  = ()    => JSON.parse(localStorage.getItem('fm_orders')  || '[]');
+const saveOrders = (arr) => localStorage.setItem('fm_orders', JSON.stringify(arr));
+const rupee      = (n)   => '₹' + Number(n).toLocaleString('en-IN');
+const fmtDate    = (iso) => {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-IN',{ day:'2-digit', month:'short', year:'numeric' })
+         + ' ' + d.toLocaleTimeString('en-IN',{ hour:'2-digit', minute:'2-digit' });
+};
+const payClass   = (p)   => ({ COD:'pay-cod', UPI:'pay-upi', Card:'pay-card', NetBanking:'pay-net' }[p] || 'pay-cod');
+
+function statusBadge(status) {
+    const cls   = { Pending:'pending', Confirmed:'confirmed', Preparing:'preparing', Shipped:'shipped', Delivered:'delivered', Cancelled:'cancelled' };
+    const icons = { Pending:'⏳', Confirmed:'✅', Preparing:'🍳', Shipped:'🚚', Delivered:'📦', Cancelled:'❌' };
+    return `<span class="status-badge status-${cls[status]||'pending'}">${icons[status]||''} ${status}</span>`;
+}
+
+function toast(msg, type = 'success') {
+    const el = document.getElementById('adminToast');
+    el.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'exclamation-circle'}"></i> ${msg}`;
+    el.className = `admin-toast show ${type}`;
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2800);
+}
+
+// ── LOGIN ─────────────────────────────────────────────────
+document.getElementById('adminLoginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const email   = document.getElementById('adminEmail').value.trim().toLowerCase();
+    const pass    = document.getElementById('adminPass').value;
+    const errEl   = document.getElementById('loginErr');
+
+    // Hide previous error
+    errEl.classList.remove('show');
+
+    if (!email || !pass) {
+        errEl.textContent = '⚠️ Please enter email and password.';
+        errEl.classList.add('show');
+        return;
+    }
+
+    const account = ADMIN_ACCOUNTS.find(
+        a => a.email.toLowerCase() === email && a.password === pass
+    );
+
+    if (account) {
+        sessionStorage.setItem('fm_admin', JSON.stringify(account));
+        showAdminApp(account);
+    } else {
+        errEl.textContent = '⚠️ Wrong email or password. Please try again.';
+        errEl.classList.add('show');
+        document.getElementById('adminPass').value = '';
+        document.getElementById('adminPass').focus();
+    }
+});
+
+function showAdminApp(account) {
+    currentAdmin = account;
+    document.getElementById('loginScreen').style.display   = 'none';
+    document.getElementById('adminApp').style.display      = 'block';
+    // Update sidebar profile
+    const initials = account.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+    document.getElementById('sidebarInitials').textContent   = initials;
+    document.getElementById('sidebarAdminName').textContent  = account.name;
+    document.getElementById('sidebarAdminEmail').textContent = account.email;
+    initAdmin();
+}
+
+document.getElementById('adminLogout').addEventListener('click', () => {
+    sessionStorage.removeItem('fm_admin');
+    currentAdmin = null;
+    document.getElementById('adminApp').style.display   = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    toast('Logged out.', 'error');
+});
+
+// Auto-login if session active — runs after DOM ready
+function checkAutoLogin() {
+    const savedAdmin = sessionStorage.getItem('fm_admin');
+    if (savedAdmin) {
+        try {
+            showAdminApp(JSON.parse(savedAdmin));
+        } catch(e) {
+            sessionStorage.removeItem('fm_admin');
+        }
+    }
+}
+
+// DOM is already loaded when this script runs (script at bottom of body)
+checkAutoLogin();
+
+// ── NAV ───────────────────────────────────────────────────
+function showPage(page) {
+    currentPage = page;
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.sidebar-link[data-page]').forEach(l => l.classList.remove('active'));
+    document.getElementById('page-' + page).classList.add('active');
+    document.querySelector(`[data-page="${page}"]`)?.classList.add('active');
+    const titles = { dashboard:'Dashboard', orders:'All Orders', customers:'Customers', delivery:'Delivery Tracker', products:'Products' };
+    document.getElementById('pageTitle').textContent = titles[page] || page;
+    renderPage(page);
+    closeMobileMenu();
+}
+
+document.querySelectorAll('.sidebar-link[data-page]').forEach(btn => {
+    btn.addEventListener('click', () => showPage(btn.dataset.page));
+});
+
+// Mobile menu
+document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+    document.getElementById('sidebar').classList.add('open');
+    document.getElementById('sidebarOverlay').style.display = 'block';
+});
+function closeMobileMenu() {
+    document.getElementById('sidebar').classList.remove('open');
+    document.getElementById('sidebarOverlay').style.display = 'none';
+}
+document.getElementById('sidebarOverlay').addEventListener('click', closeMobileMenu);
+document.getElementById('refreshBtn').addEventListener('click', () => { renderPage(currentPage); toast('Refreshed!'); });
+
+// ── INIT ──────────────────────────────────────────────────
+function initAdmin() {
+    seedDemoOrders();
+    renderPage('dashboard');
+    updateBadges();
+    setupFilters();
+}
+
+function updateBadges() {
+    const orders  = getOrders();
+    const pending = orders.filter(o => o.status === 'Pending').length;
+    const active  = orders.filter(o => ['Confirmed','Preparing','Shipped'].includes(o.status)).length;
+    const pb = document.getElementById('pendingBadge');
+    const ab = document.getElementById('activeBadge');
+    pb.textContent  = pending;
+    ab.textContent  = active;
+    pb.style.display = pending ? '' : 'none';
+    ab.style.display = active  ? '' : 'none';
+}
+
+function renderPage(page) {
+    updateBadges();
+    const map = { dashboard:renderDashboard, orders:renderOrders, customers:renderCustomers, delivery:renderDelivery, products:renderProducts };
+    map[page]?.();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────
+function renderDashboard() {
+    const orders        = getOrders();
+    const totalRevenue  = orders.filter(o => o.status !== 'Cancelled').reduce((s,o) => s+o.total, 0);
+    const uniqueCustomers = new Set(orders.map(o => o.customer.email)).size;
+
+    document.getElementById('statsGrid').innerHTML = `
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-rupee-sign"></i></div>
+            <div class="stat-info"><strong>${rupee(totalRevenue)}</strong><span>Total Revenue</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-shopping-bag"></i></div>
+            <div class="stat-info"><strong>${orders.length}</strong><span>Total Orders</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon gold"><i class="fas fa-clock"></i></div>
+            <div class="stat-info"><strong>${orders.filter(o=>o.status==='Pending').length}</strong><span>Pending Orders</span></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fas fa-users"></i></div>
+            <div class="stat-info"><strong>${uniqueCustomers}</strong><span>Customers</span></div>
+        </div>`;
+
+    // Recent orders
+    const tbody = document.getElementById('recentOrdersTbody');
+    if (!orders.length) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-admin"><i class="fas fa-inbox"></i> No orders</td></tr>';
+    } else {
+        tbody.innerHTML = orders.slice(0,8).map(o => `
+            <tr>
+                <td class="td-id">${o.orderId}</td>
+                <td class="td-bold">${o.customer.name}</td>
+                <td><strong>${rupee(o.total)}</strong></td>
+                <td>${statusBadge(o.status)}</td>
+            </tr>`).join('');
+    }
+
+    // Status chart
+    const statuses = ['Pending','Confirmed','Preparing','Shipped','Delivered','Cancelled'];
+    const colors   = { Pending:'#f59e0b', Confirmed:'#3b82f6', Preparing:'#8b5cf6', Shipped:'#f97316', Delivered:'#22c55e', Cancelled:'#ef4444' };
+    const counts   = statuses.map(s => ({ s, c: orders.filter(o => o.status === s).length })).filter(x => x.c > 0);
+    const maxC     = Math.max(...counts.map(x => x.c), 1);
+
+    document.getElementById('statusChart').innerHTML = counts.length
+        ? counts.map(x => `
+            <div class="chart-row">
+                <div class="chart-label">
+                    <span class="chart-label-name" style="color:${colors[x.s]}">${x.s}</span>
+                    <span class="chart-label-count">${x.c}</span>
+                </div>
+                <div class="chart-bar-bg">
+                    <div class="chart-bar" style="width:${(x.c/maxC*100).toFixed(1)}%;background:${colors[x.s]}"></div>
+                </div>
+            </div>`).join('')
+        : '<p class="empty-admin"><i class="fas fa-chart-pie"></i><br>No data yet</p>';
+
+    // Today's deliveries
+    const today   = new Date().toDateString();
+    const todayOs = orders.filter(o => new Date(o.date).toDateString() === today && o.status !== 'Cancelled');
+    const dt      = document.getElementById('todayDeliveryTbody');
+    if (!todayOs.length) {
+        dt.innerHTML = '<tr><td colspan="8" class="empty-admin"><i class="fas fa-truck"></i><br>No deliveries today</td></tr>';
+    } else {
+        dt.innerHTML = todayOs.map(o => `
+            <tr>
+                <td class="td-id">${o.orderId}</td>
+                <td>
+                    <div class="td-name">${o.customer.name}</div>
+                    <div class="td-sub">${o.customer.phone}</div>
+                </td>
+                <td class="td-muted">${o.address.area}, ${o.address.city}</td>
+                <td>${o.items.length} item${o.items.length>1?'s':''}</td>
+                <td><strong>${rupee(o.total)}</strong></td>
+                <td><span class="pay-badge ${payClass(o.payment)}">${o.payment}</span></td>
+                <td>${statusBadge(o.status)}</td>
+                <td>
+                    <button type="button" class="action-btn btn-view" onclick="openOrderDetail('${o.orderId}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                </td>
+            </tr>`).join('');
+    }
+}
+
+// ── ORDERS ────────────────────────────────────────────────
+function setupFilters() {
+    document.getElementById('orderSearch')?.addEventListener('input', () => { ordersPage=1; renderOrders(); });
+    document.getElementById('orderStatusFilter')?.addEventListener('change', () => { ordersPage=1; renderOrders(); });
+    document.getElementById('orderPayFilter')?.addEventListener('change', () => { ordersPage=1; renderOrders(); });
+    document.getElementById('clearOrdersFilter')?.addEventListener('click', () => {
+        document.getElementById('orderSearch').value = '';
+        document.getElementById('orderStatusFilter').value = '';
+        document.getElementById('orderPayFilter').value = '';
+        ordersPage=1; renderOrders();
+    });
+    document.getElementById('customerSearch')?.addEventListener('input', renderCustomers);
+    document.getElementById('deliveryStatusFilter')?.addEventListener('change', renderDelivery);
+    document.getElementById('productSearch')?.addEventListener('input', renderProducts);
+    document.getElementById('productCatFilter')?.addEventListener('change', renderProducts);
+}
+
+function renderOrders() {
+    let orders = getOrders();
+    const q      = document.getElementById('orderSearch')?.value.toLowerCase() || '';
+    const status = document.getElementById('orderStatusFilter')?.value || '';
+    const pay    = document.getElementById('orderPayFilter')?.value || '';
+
+    if (q)      orders = orders.filter(o => o.orderId.toLowerCase().includes(q) || o.customer.name.toLowerCase().includes(q) || o.customer.phone.includes(q));
+    if (status) orders = orders.filter(o => o.status === status);
+    if (pay)    orders = orders.filter(o => o.payment === pay);
+
+    const start = (ordersPage - 1) * ITEMS_PER_PAGE;
+    const paged = orders.slice(start, start + ITEMS_PER_PAGE);
+    const tbody = document.getElementById('ordersTbody');
+
+    if (!paged.length) {
+        tbody.innerHTML = `<tr><td colspan="10"><div class="empty-admin"><i class="fas fa-inbox"></i><h3>No orders found</h3></div></td></tr>`;
+    } else {
+        tbody.innerHTML = paged.map((o, i) => `
+            <tr>
+                <td class="td-muted">${start+i+1}</td>
+                <td class="td-id">${o.orderId}</td>
+                <td class="td-muted td-small">${fmtDate(o.date)}</td>
+                <td>
+                    <div class="td-name">${o.customer.name}</div>
+                    <div class="td-sub">${o.customer.email}</div>
+                </td>
+                <td class="td-bold">${o.customer.phone}</td>
+                <td class="td-muted">${o.items.length} item${o.items.length>1?'s':''}</td>
+                <td><strong>${rupee(o.total)}</strong></td>
+                <td><span class="pay-badge ${payClass(o.payment)}">${o.payment}</span></td>
+                <td>${statusBadge(o.status)}</td>
+                <td style="white-space:nowrap">
+                    <button type="button" class="action-btn btn-view" onclick="openOrderDetail('${o.orderId}')">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    ${o.status !== 'Delivered' && o.status !== 'Cancelled'
+                        ? `<button type="button" class="action-btn btn-delete btn-ml" onclick="cancelOrder('${o.orderId}')" title="Cancel Order">
+                               <i class="fas fa-ban"></i>
+                           </button>`
+                        : ''}
+                </td>
+            </tr>`).join('');
+    }
+
+    // Pagination
+    const pages = Math.ceil(orders.length / ITEMS_PER_PAGE);
+    const pg    = document.getElementById('ordersPagination');
+    pg.innerHTML = '';
+    if (pages > 1) {
+        for (let p = 1; p <= pages; p++) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'page-btn' + (p === ordersPage ? ' active' : '');
+            btn.textContent = p;
+            btn.addEventListener('click', () => { ordersPage = p; renderOrders(); });
+            pg.appendChild(btn);
+        }
+    }
+}
+
+function cancelOrder(orderId) {
+    if (!confirm('Cancel this order?')) return;
+    const orders = getOrders();
+    const o = orders.find(x => x.orderId === orderId);
+    if (o) { o.status = 'Cancelled'; saveOrders(orders); toast('Order cancelled.','error'); renderPage(currentPage); }
+}
+
+// ── ORDER DETAIL MODAL ────────────────────────────────────
+function openOrderDetail(orderId) {
+    const o = getOrders().find(x => x.orderId === orderId);
+    if (!o) return;
+
+    const modal = document.getElementById('orderDetailModal');
+    modal.hidden = false;
+    modal.innerHTML = `
+    <div class="od-overlay" onclick="if(event.target===this)closeOrderDetail()">
+        <div class="od-box">
+            <div class="od-header">
+                <h3><i class="fas fa-receipt"></i> Order ${o.orderId}</h3>
+                <button type="button" class="od-close" onclick="closeOrderDetail()" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="od-body">
+                <div class="od-grid">
+                    <div class="od-info-card">
+                        <h4><i class="fas fa-user"></i> Customer</h4>
+                        <p><i class="fas fa-user"></i> <strong>${o.customer.name}</strong></p>
+                        <p><i class="fas fa-phone"></i> ${o.customer.phone}</p>
+                        <p><i class="fas fa-envelope"></i> ${o.customer.email}</p>
+                    </div>
+                    <div class="od-info-card">
+                        <h4><i class="fas fa-info-circle"></i> Order Info</h4>
+                        <p><i class="fas fa-hashtag"></i> <strong>${o.orderId}</strong></p>
+                        <p><i class="fas fa-calendar"></i> ${fmtDate(o.date)}</p>
+                        <p><i class="fas fa-credit-card"></i> ${o.payment}</p>
+                        <p>Status: ${statusBadge(o.status)}</p>
+                    </div>
+                    <div class="od-info-card od-full">
+                        <h4><i class="fas fa-map-marker-alt"></i> Delivery Address</h4>
+                        <p><i class="fas fa-home"></i> ${o.address.street}</p>
+                        ${o.address.landmark ? `<p><i class="fas fa-map-pin"></i> Landmark: ${o.address.landmark}</p>` : ''}
+                        <p><i class="fas fa-map"></i> ${o.address.area}, ${o.address.city}, ${o.address.state} — <strong>${o.address.pincode}</strong></p>
+                        ${o.notes ? `<p><i class="fas fa-sticky-note"></i> Note: <em>${o.notes}</em></p>` : ''}
+                    </div>
+                </div>
+
+                <table class="od-items-table">
+                    <thead><tr>
+                        <th>#</th><th>Product</th><th>Category</th><th>Price</th><th>Qty</th><th>Subtotal</th>
+                    </tr></thead>
+                    <tbody>
+                        ${o.items.map((it,idx) => `
+                        <tr>
+                            <td class="td-muted">${idx+1}</td>
+                            <td><strong>${it.name}</strong></td>
+                            <td class="td-muted" style="text-transform:capitalize">${it.category}</td>
+                            <td>${rupee(it.price)} / ${it.unit||'unit'}</td>
+                            <td><strong>${it.quantity}</strong></td>
+                            <td class="od-item-subtotal">${rupee(it.subtotal)}</td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+
+                <div class="od-totals">
+                    <div class="od-total-row"><span>Subtotal</span><span>${rupee(o.subtotal)}</span></div>
+                    <div class="od-total-row"><span>Delivery</span><span>${o.delivery===0?'🎉 FREE':rupee(o.delivery)}</span></div>
+                    <div class="od-total-row grand"><span>Total</span><span>${rupee(o.total)}</span></div>
+                </div>
+
+                <div class="od-status-update">
+                    <span class="od-status-label"><i class="fas fa-edit"></i> Update Status:</span>
+                    <select class="od-status-select" id="statusUpdateSelect">
+                        ${['Pending','Confirmed','Preparing','Shipped','Delivered','Cancelled'].map(s =>
+                            `<option value="${s}"${o.status===s?' selected':''}>${s}</option>`
+                        ).join('')}
+                    </select>
+                    <button type="button" class="od-update-btn" onclick="updateOrderStatus('${o.orderId}')">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>`;
+}
+
+function closeOrderDetail() {
+    const modal = document.getElementById('orderDetailModal');
+    modal.hidden = true;
+    modal.innerHTML = '';
+}
+
+function updateOrderStatus(orderId) {
+    const newStatus = document.getElementById('statusUpdateSelect').value;
+    const orders    = getOrders();
+    const o = orders.find(x => x.orderId === orderId);
+    if (!o) return;
+    o.status = newStatus;
+    saveOrders(orders);
+    toast(`${orderId} → ${newStatus}`);
+    closeOrderDetail();
+    renderPage(currentPage);
+}
+
+// ── CUSTOMERS ─────────────────────────────────────────────
+function renderCustomers() {
+    const orders = getOrders();
+    const q      = document.getElementById('customerSearch')?.value.toLowerCase() || '';
+    const map    = {};
+
+    orders.forEach(o => {
+        const key = o.customer.email;
+        if (!map[key]) map[key] = { ...o.customer, orders:[], totalSpent:0, lastOrder:null };
+        map[key].orders.push(o);
+        if (o.status !== 'Cancelled') map[key].totalSpent += o.total;
+        if (!map[key].lastOrder || new Date(o.date) > new Date(map[key].lastOrder)) map[key].lastOrder = o.date;
+    });
+
+    let customers = Object.values(map);
+    if (q) customers = customers.filter(c => c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q));
+
+    const tbody = document.getElementById('customersTbody');
+    if (!customers.length) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-admin"><i class="fas fa-users"></i><h3>No customers found</h3></div></td></tr>`;
+        return;
+    }
+    tbody.innerHTML = customers.map((c,i) => {
+        const initials = c.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+        return `<tr>
+            <td class="td-muted">${i+1}</td>
+            <td>
+                <div class="cust-profile">
+                    <div class="cust-avatar">${initials}</div>
+                    <div>
+                        <div class="cust-name">${c.name}</div>
+                        <div class="cust-email">${c.email}</div>
+                    </div>
+                </div>
+            </td>
+            <td class="td-bold">${c.phone}</td>
+            <td><strong>${c.orders.length}</strong></td>
+            <td><strong style="color:var(--primary-dark)">${rupee(c.totalSpent)}</strong></td>
+            <td class="td-muted td-small">${c.lastOrder ? fmtDate(c.lastOrder) : '—'}</td>
+            <td>
+                <button type="button" class="action-btn btn-view" onclick="viewCustomerOrders('${c.email}')">
+                    <i class="fas fa-list"></i> Orders
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
+}
+
+function viewCustomerOrders(email) {
+    const orders = getOrders().filter(o => o.customer.email === email);
+    if (!orders.length) { toast('No orders for this customer.','error'); return; }
+    const modal = document.getElementById('orderDetailModal');
+    modal.hidden = false;
+    modal.innerHTML = `
+    <div class="od-overlay" onclick="if(event.target===this)closeOrderDetail()">
+        <div class="od-box">
+            <div class="od-header">
+                <h3><i class="fas fa-user"></i> ${orders[0].customer.name}'s Orders</h3>
+                <button type="button" class="od-close" onclick="closeOrderDetail()" aria-label="Close"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="od-body">
+                <table class="cust-orders-table">
+                    <thead><tr>
+                        <th>Order ID</th><th>Date</th><th>Items</th><th>Total</th><th>Status</th><th></th>
+                    </tr></thead>
+                    <tbody>
+                        ${orders.map(o => `
+                        <tr>
+                            <td class="td-id">${o.orderId}</td>
+                            <td class="td-muted td-small">${fmtDate(o.date)}</td>
+                            <td class="td-muted">${o.items.length} item${o.items.length>1?'s':''}</td>
+                            <td><strong>${rupee(o.total)}</strong></td>
+                            <td>${statusBadge(o.status)}</td>
+                            <td>
+                                <button type="button" class="action-btn btn-view"
+                                    onclick="closeOrderDetail();setTimeout(()=>openOrderDetail('${o.orderId}'),80)">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </td>
+                        </tr>`).join('')}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>`;
+}
+
+// ── DELIVERY TRACKER ──────────────────────────────────────
+function renderDelivery() {
+    let orders = getOrders();
+    const filter = document.getElementById('deliveryStatusFilter')?.value || '';
+    orders = filter
+        ? orders.filter(o => o.status === filter)
+        : orders.filter(o => !['Delivered','Cancelled'].includes(o.status));
+
+    const tbody = document.getElementById('deliveryTbody');
+    if (!orders.length) {
+        tbody.innerHTML = `<tr><td colspan="12"><div class="empty-admin"><i class="fas fa-truck"></i><h3>No active deliveries</h3></div></td></tr>`;
+        return;
+    }
+    tbody.innerHTML = orders.map(o => `
+        <tr>
+            <td>
+                <div class="td-id">${o.orderId}</div>
+                <div class="td-sub">${fmtDate(o.date)}</div>
+            </td>
+            <td>
+                <div class="td-name">${o.customer.name}</div>
+                <div class="td-sub">${o.customer.email}</div>
+            </td>
+            <td class="td-bold">${o.customer.phone}</td>
+            <td class="td-wrap">
+                <div class="td-bold">${o.address.street}</div>
+                <div class="td-sub">${o.address.area}, ${o.address.city}, ${o.address.state}</div>
+            </td>
+            <td class="td-muted">${o.address.landmark || '—'}</td>
+            <td><strong style="color:var(--primary-dark)">${o.address.pincode}</strong></td>
+            <td class="td-muted" style="font-size:.82rem">${o.items.map(it=>`${it.name} ×${it.quantity}`).join('<br>')}</td>
+            <td><strong style="color:var(--primary-dark)">${rupee(o.total)}</strong></td>
+            <td><span class="pay-badge ${payClass(o.payment)}">${o.payment}</span></td>
+            <td class="td-maxw">${o.notes || '—'}</td>
+            <td>${statusBadge(o.status)}</td>
+            <td>
+                <select class="status-quick-select" onchange="quickUpdateStatus('${o.orderId}',this.value)" aria-label="Update status">
+                    ${['Pending','Confirmed','Preparing','Shipped','Delivered','Cancelled'].map(s =>
+                        `<option value="${s}"${o.status===s?' selected':''}>${s}</option>`
+                    ).join('')}
+                </select>
+            </td>
+        </tr>`).join('');
+}
+
+function quickUpdateStatus(orderId, newStatus) {
+    const orders = getOrders();
+    const o = orders.find(x => x.orderId === orderId);
+    if (!o) return;
+    o.status = newStatus;
+    saveOrders(orders);
+    toast(`${orderId} → ${newStatus}`);
+    renderPage(currentPage);
+    updateBadges();
+}
+
+// ── PRODUCTS ──────────────────────────────────────────────
+function renderProducts() {
+    let prods = [...PRODUCTS];
+    const q   = document.getElementById('productSearch')?.value.toLowerCase() || '';
+    const cat = document.getElementById('productCatFilter')?.value || '';
+    if (q)   prods = prods.filter(p => p.name.toLowerCase().includes(q));
+    if (cat) prods = prods.filter(p => p.category === cat);
+
+    document.getElementById('productsTbody').innerHTML = prods.map((p,i) => `
+        <tr>
+            <td class="td-muted">${i+1}</td>
+            <td class="td-bold">${p.name}</td>
+            <td><span class="cat-badge cat-${p.category}">${p.category}</span></td>
+            <td><strong>${rupee(p.price)}</strong></td>
+            <td class="td-muted">${p.unit}</td>
+            <td style="color:#f59e0b;font-weight:700">★ ${p.rating}</td>
+            <td class="${p.stock===0?'stock-out':p.stock<=5?'stock-low':'stock-ok'}">${p.stock}</td>
+            <td>
+                <span class="status-badge ${p.stock===0?'status-cancelled':p.stock<=5?'status-pending':'status-delivered'}">
+                    ${p.stock===0?'Out of Stock':p.stock<=5?'Low Stock':'In Stock'}
+                </span>
+            </td>
+        </tr>`).join('');
+}
+
+// ── DEMO ORDERS (seed) ────────────────────────────────────
+function seedDemoOrders() {
+    if (getOrders().length) return;
+    const demos = [
+        {
+            orderId:'FM00000001', date:new Date(Date.now()-3600000).toISOString(), status:'Pending',
+            customer:{name:'Rahul Sharma',phone:'9876543210',email:'rahul@example.com'},
+            address:{street:'House No. 5, Green Park',landmark:'Near Metro Station',area:'Sector 15',city:'Greater Noida',state:'Uttar Pradesh',pincode:'201310'},
+            payment:'COD', notes:'Please ring bell twice',
+            items:[{id:1,name:'Fresh Apples',category:'fruits',price:248,unit:'kg',quantity:2,subtotal:496},{id:13,name:'Fresh Milk',category:'dairy',price:290,unit:'litre',quantity:1,subtotal:290}],
+            subtotal:786, delivery:0, total:786
+        },
+        {
+            orderId:'FM00000002', date:new Date(Date.now()-7200000).toISOString(), status:'Confirmed',
+            customer:{name:'Priya Gupta',phone:'9123456789',email:'priya@example.com'},
+            address:{street:'Flat 302, Sunrise Apartments',landmark:'Opp. City Mall',area:'Noida Ext.',city:'Noida',state:'Uttar Pradesh',pincode:'201301'},
+            payment:'UPI', notes:'',
+            items:[{id:22,name:'Fresh Bread',category:'bakery',price:248,unit:'loaf',quantity:1,subtotal:248},{id:27,name:'Coffee',category:'beverages',price:414,unit:'250g',quantity:1,subtotal:414}],
+            subtotal:662, delivery:0, total:662
+        },
+        {
+            orderId:'FM00000003', date:new Date(Date.now()-86400000).toISOString(), status:'Delivered',
+            customer:{name:'Amit Kumar',phone:'8765432109',email:'amit@example.com'},
+            address:{street:'B-12, Krishna Nagar',landmark:'Near Post Office',area:'Lal Kuan',city:'Delhi',state:'Delhi',pincode:'110051'},
+            payment:'Card', notes:'Leave at door',
+            items:[{id:18,name:'Chicken Breast',category:'meat',price:580,unit:'kg',quantity:2,subtotal:1160},{id:11,name:'Potatoes',category:'vegetables',price:165,unit:'kg',quantity:3,subtotal:495}],
+            subtotal:1655, delivery:0, total:1655
+        },
+        {
+            orderId:'FM00000004', date:new Date(Date.now()-180000).toISOString(), status:'Preparing',
+            customer:{name:'Sunita Devi',phone:'9988776655',email:'sunita@example.com'},
+            address:{street:'A-44, Shastri Nagar',landmark:'',area:'Sector 7',city:'Ghaziabad',state:'Uttar Pradesh',pincode:'201001'},
+            payment:'COD', notes:'Call 10 min before',
+            items:[{id:4,name:'Strawberries',category:'fruits',price:414,unit:'250g',quantity:2,subtotal:828},{id:15,name:'Yogurt',category:'dairy',price:248,unit:'400g',quantity:3,subtotal:744}],
+            subtotal:1572, delivery:0, total:1572
+        },
+        {
+            orderId:'FM00000005', date:new Date(Date.now()-120000).toISOString(), status:'Shipped',
+            customer:{name:'Vikram Singh',phone:'7654321098',email:'vikram@example.com'},
+            address:{street:'Plot 88, Model Town',landmark:'Near SBI Bank',area:'Model Town',city:'Delhi',state:'Delhi',pincode:'110009'},
+            payment:'UPI', notes:'',
+            items:[{id:6,name:'Watermelon',category:'fruits',price:497,unit:'piece',quantity:1,subtotal:497},{id:26,name:'Orange Juice',category:'beverages',price:331,unit:'1L',quantity:2,subtotal:662}],
+            subtotal:1159, delivery:0, total:1159
+        }
+    ];
+    saveOrders(demos);
+}
+
+// ESC to close modals
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeOrderDetail(); });
+</script>
+
+</body>
+</html>

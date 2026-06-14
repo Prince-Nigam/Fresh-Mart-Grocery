@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart - Online Grocery Store</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1><i class="fas fa-shopping-cart"></i> FreshMart</h1>
+                </div>
+
+                <div class="search-bar">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search fruits, vegetables, dairy...">
+                    <button type="button" class="search-btn" aria-label="Search"><i class="fas fa-arrow-right"></i></button>
+                </div>
+
+                <div class="header-actions">
+                    <button type="button" class="cart-icon" id="cartIcon" title="Shopping Cart" aria-label="Open shopping cart">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span class="cart-count" id="cartCount">0</span>
+                    </button>
+                    <!-- User area — filled by JS -->
+                    <div class="user-area" id="userArea">
+                        <a href="login.html" class="user-icon-link" title="Login" aria-label="Login to your account">
+                            <i class="fas fa-user"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="navigation">
+        <div class="container">
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link active" data-category="all"><i class="fas fa-th"></i> All</a></li>
+                <li><a href="#" class="nav-link" data-category="fruits"><i class="fas fa-apple-alt"></i> Fruits</a></li>
+                <li><a href="#" class="nav-link" data-category="vegetables"><i class="fas fa-carrot"></i> Vegetables</a></li>
+                <li><a href="#" class="nav-link" data-category="dairy"><i class="fas fa-cheese"></i> Dairy</a></li>
+                <li><a href="#" class="nav-link" data-category="meat"><i class="fas fa-drumstick-bite"></i> Meat</a></li>
+                <li><a href="#" class="nav-link" data-category="bakery"><i class="fas fa-bread-slice"></i> Bakery</a></li>
+                <li><a href="#" class="nav-link" data-category="beverages"><i class="fas fa-mug-hot"></i> Beverages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+        </div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-badge"><i class="fas fa-bolt"></i> Same Day Delivery</div>
+                <h2>Fresh Groceries<br><span class="hero-highlight">Delivered to Your Door</span></h2>
+                <p>Shop from thousands of farm-fresh products. Quality guaranteed, delivered fast.</p>
+                <div class="hero-actions">
+                    <button type="button" class="cta-btn" id="shopNowBtn">
+                        <i class="fas fa-shopping-cart"></i> Shop Now
+                    </button>
+                    <div class="hero-stats">
+                        <div class="stat"><strong>30+</strong><span>Products</span></div>
+                        <div class="stat-divider"></div>
+                        <div class="stat"><strong>4.8★</strong><span>Rating</span></div>
+                        <div class="stat-divider"></div>
+                        <div class="stat"><strong>Free</strong><span>Delivery ₹500+</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image-area">
+                <div class="hero-fruit-grid">
+                    <div class="fruit-item">🍎</div>
+                    <div class="fruit-item">🥕</div>
+                    <div class="fruit-item">🍇</div>
+                    <div class="fruit-item">🥦</div>
+                    <div class="fruit-item">🍊</div>
+                    <div class="fruit-item">🥛</div>
+                    <div class="fruit-item">🍞</div>
+                    <div class="fruit-item">🍓</div>
+                    <div class="fruit-item">☕</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Bar -->
+    <div class="features-bar">
+        <div class="container">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-truck"></i>
+                    <div>
+                        <strong>Free Delivery</strong>
+                        <span>On orders above ₹500</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-leaf"></i>
+                    <div>
+                        <strong>100% Fresh</strong>
+                        <span>Farm to your table</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <strong>Secure Payment</strong>
+                        <span>Safe &amp; encrypted</span>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-undo"></i>
+                    <div>
+                        <strong>Easy Returns</strong>
+                        <span>Hassle-free policy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="container">
+            <div class="section-header">
+                <h3 class="section-title" id="sectionTitle">All Products</h3>
+                <div class="filters">
+                    <div class="filter-group">
+                        <label for="sortSelect"><i class="fas fa-sort"></i> Sort:</label>
+                        <select id="sortSelect">
+                            <option value="name">Name A–Z</option>
+                            <option value="price-low">Price: Low → High</option>
+                            <option value="price-high">Price: High → Low</option>
+                            <option value="rating">Best Rated</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="priceRange"><i class="fas fa-tag"></i> Max Price:</label>
+                        <div class="range-wrap">
+                            <input type="range" id="priceRange" min="0" max="8300" value="8300">
+                            <span id="priceValue" class="price-badge">₹8300</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="products-grid" id="productsGrid">
+                <!-- Products loaded dynamically -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Shopping Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar" role="dialog" aria-label="Shopping Cart">
+        <div class="cart-header">
+            <h3><i class="fas fa-shopping-bag"></i> Your Cart</h3>
+            <button type="button" class="close-cart" id="closeCart" aria-label="Close cart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+
+        <div class="cart-items" id="cartItems"></div>
+
+        <div class="cart-footer">
+            <div class="cart-summary">
+                <div class="cart-summary-row">
+                    <span>Subtotal</span>
+                    <span>₹<span id="cartSubtotal">0.00</span></span>
+                </div>
+                <div class="cart-summary-row" id="deliveryRow">
+                    <span>Delivery</span>
+                    <span id="deliveryFee">₹40</span>
+                </div>
+                <div class="cart-summary-row total-row">
+                    <strong>Total</strong>
+                    <strong>₹<span id="cartTotal">0.00</span></strong>
+                </div>
+            </div>
+            <button type="button" class="checkout-btn" id="checkoutBtn">
+                <i class="fas fa-lock"></i> Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Cart Overlay -->
+    <div class="cart-overlay" id="cartOverlay"></div>
+
+    <!-- Product Modal -->
+    <div class="product-modal" id="productModal" role="dialog" aria-modal="true">
+        <div class="modal-content">
+            <button type="button" class="close-modal" id="closeModal" aria-label="Close product details">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section brand-section">
+                    <div class="footer-logo">
+                        <i class="fas fa-shopping-cart"></i> FreshMart
+                    </div>
+                    <p>Your trusted online grocery store. Farm-fresh products delivered to your doorstep with love.</p>
+                    <div class="social-links">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> About Us</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Delivery Info</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Returns Policy</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> FAQs</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Categories</h4>
+                    <ul>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Fresh Fruits</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Vegetables</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Dairy &amp; Eggs</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Meat &amp; Fish</a></li>
+                        <li><a href="#"><i class="fas fa-chevron-right"></i> Bakery</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Contact Us</h4>
+                    <div class="contact-item">
+                        <i class="fas fa-phone"></i>
+                        <span>(+91) 7459883506</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>princenigam972@gmail.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <span>Gautam Buddha University,<br>Greater Noida, UP</span>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-clock"></i>
+                        <span>Mon–Sat: 9AM – 8PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2024 FreshMart. All rights reserved. Made with <i class="fas fa-heart footer-heart"></i> in India.</p>
+                <div class="payment-icons">
+                    <i class="fab fa-cc-visa"></i>
+                    <i class="fab fa-cc-mastercard"></i>
+                    <i class="fab fa-cc-paypal"></i>
+                    <i class="fab fa-google-pay"></i>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

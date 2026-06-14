@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart — My Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+    --primary:      #27ae60;
+    --primary-dark: #219150;
+    --primary-light:#2ecc71;
+    --accent:       #e74c3c;
+    --text:         #1a202c;
+    --text-muted:   #718096;
+    --border:       #e2e8f0;
+    --bg:           #f7fafc;
+    --card:         #ffffff;
+    --radius:       14px;
+    --shadow:       0 2px 16px rgba(0,0,0,.08);
+}
+html { scroll-behavior:smooth; }
+body {
+    font-family:'Inter','Segoe UI',system-ui,sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+
+/* ── TOPBAR ── */
+.topbar {
+    background:linear-gradient(135deg,#2ecc71,#27ae60);
+    padding:.85rem 2rem;
+    display:flex; align-items:center; justify-content:space-between;
+    box-shadow:0 2px 12px rgba(39,174,96,.3);
+    position:sticky; top:0; z-index:100;
+}
+.topbar-left { display:flex; align-items:center; gap:12px; }
+.topbar-logo-icon {
+    width:38px; height:38px;
+    background:rgba(255,255,255,.25); border-radius:10px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.1rem; color:white;
+}
+.topbar-brand { font-size:1.2rem; font-weight:800; color:white; text-decoration:none; }
+.topbar-brand:hover { opacity:.9; }
+.topbar-right { display:flex; align-items:center; gap:10px; }
+.topbar-btn {
+    background:rgba(255,255,255,.2); color:white; border:none;
+    padding:7px 14px; border-radius:8px; font-size:.85rem; font-weight:600;
+    cursor:pointer; text-decoration:none; display:flex; align-items:center; gap:6px;
+    transition:all .2s;
+}
+.topbar-btn:hover { background:rgba(255,255,255,.35); }
+.topbar-btn.logout { background:rgba(231,76,60,.25); }
+.topbar-btn.logout:hover { background:rgba(231,76,60,.45); }
+
+/* ── MAIN LAYOUT ── */
+.page-wrap { max-width:1000px; margin:0 auto; padding:2rem 1.5rem; }
+
+/* ── PROFILE CARD ── */
+.profile-card {
+    background:linear-gradient(135deg,#1a7a45,#27ae60,#2ecc71);
+    border-radius:20px; padding:2rem 2.5rem;
+    display:flex; align-items:center; gap:2rem;
+    margin-bottom:2rem; color:white;
+    box-shadow:0 8px 30px rgba(39,174,96,.35);
+    position:relative; overflow:hidden;
+}
+.profile-card::before {
+    content:'';
+    position:absolute; top:-40px; right:-40px;
+    width:180px; height:180px;
+    background:rgba(255,255,255,.07);
+    border-radius:50%;
+}
+.profile-card::after {
+    content:'';
+    position:absolute; bottom:-60px; right:80px;
+    width:120px; height:120px;
+    background:rgba(255,255,255,.05);
+    border-radius:50%;
+}
+.profile-avatar {
+    width:72px; height:72px;
+    background:rgba(255,255,255,.25);
+    border:3px solid rgba(255,255,255,.5);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.8rem; font-weight:800; color:white;
+    flex-shrink:0; z-index:1;
+}
+.profile-info { z-index:1; }
+.profile-info h2 { font-size:1.5rem; font-weight:800; margin-bottom:.2rem; }
+.profile-info p  { font-size:.9rem; opacity:.85; }
+.profile-stats {
+    margin-left:auto; display:flex; gap:1.5rem; z-index:1;
+}
+.profile-stat { text-align:center; }
+.profile-stat strong { display:block; font-size:1.6rem; font-weight:800; }
+.profile-stat span   { font-size:.78rem; opacity:.8; }
+
+/* ── SECTION TITLE ── */
+.section-title {
+    font-size:1.05rem; font-weight:800; color:var(--text);
+    margin-bottom:1rem; display:flex; align-items:center; gap:8px;
+    padding-left:12px; border-left:4px solid var(--primary);
+}
+.section-title i { color:var(--primary); }
+
+/* ── STATS ROW ── */
+.stats-row {
+    display:grid; grid-template-columns:repeat(3,1fr);
+    gap:1rem; margin-bottom:2rem;
+}
+.stat-mini {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); padding:1.2rem 1.4rem;
+    display:flex; align-items:center; gap:1rem;
+    box-shadow:var(--shadow); transition:all .2s;
+}
+.stat-mini:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.1); }
+.stat-mini-icon {
+    width:46px; height:46px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.2rem; flex-shrink:0;
+}
+.si-green  { background:#f0fdf4; color:var(--primary); }
+.si-blue   { background:#eff6ff; color:#3b82f6; }
+.si-gold   { background:#fffbeb; color:#f59e0b; }
+.si-purple { background:#faf5ff; color:#8b5cf6; }
+.stat-mini strong { display:block; font-size:1.4rem; font-weight:800; color:var(--text); line-height:1; }
+.stat-mini span   { font-size:.8rem; color:var(--text-muted); margin-top:.2rem; display:block; }
+
+/* ── ORDERS TABLE ── */
+.card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow); margin-bottom:2rem;
+}
+.card-header {
+    padding:1.2rem 1.5rem; border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    background:linear-gradient(135deg,#f0fdf4,white);
+    border-radius:var(--radius) var(--radius) 0 0;
+}
+.card-header h3 { font-size:1rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:7px; }
+.card-header h3 i { color:var(--primary); }
+.card-body { padding:0; }
+
+.table-wrap { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; font-size:.87rem; }
+thead tr { background:#f8fafc; }
+th {
+    padding:.8rem 1rem; text-align:left;
+    font-size:.75rem; font-weight:800; color:var(--text-muted);
+    text-transform:uppercase; letter-spacing:.5px; white-space:nowrap;
+    border-bottom:2px solid var(--border);
+}
+td { padding:.9rem 1rem; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
+tbody tr:hover { background:#f8fffe; }
+tbody tr:last-child td { border-bottom:none; }
+
+.status-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:4px 10px; border-radius:20px;
+    font-size:.75rem; font-weight:700; white-space:nowrap;
+}
+.status-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
+.s-pending   { background:#fffbeb; color:#d97706; }
+.s-confirmed { background:#eff6ff; color:#2563eb; }
+.s-preparing { background:#faf5ff; color:#7c3aed; }
+.s-shipped   { background:#fff7ed; color:#c2410c; }
+.s-delivered { background:#f0fdf4; color:#16a34a; }
+.s-cancelled { background:#fef2f2; color:#dc2626; }
+
+.order-id    { font-weight:700; font-size:.82rem; color:var(--primary-dark); }
+.order-items { font-size:.82rem; color:var(--text-muted); }
+.order-amt   { font-weight:800; color:var(--text); }
+.pay-badge   { font-size:.78rem; font-weight:700; padding:3px 8px; border-radius:12px; }
+.pay-cod  { background:#fffbeb; color:#d97706; }
+.pay-upi  { background:#eff6ff; color:#2563eb; }
+.pay-card { background:#f0fdf4; color:#16a34a; }
+.pay-net  { background:#faf5ff; color:#7c3aed; }
+
+.btn-detail {
+    background:#f0fdf4; color:var(--primary-dark); border:none;
+    padding:5px 12px; border-radius:7px; font-size:.78rem; font-weight:700;
+    cursor:pointer; transition:all .15s; display:inline-flex; align-items:center; gap:4px;
+}
+.btn-detail:hover { background:#dcfce7; }
+
+/* ── ORDER DETAIL MODAL ── */
+.modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:500;
+    display:flex; align-items:center; justify-content:center; padding:1rem;
+    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+}
+.modal-box {
+    background:white; border-radius:18px; width:100%; max-width:580px;
+    max-height:88vh; overflow-y:auto;
+    box-shadow:0 25px 80px rgba(0,0,0,.25);
+    animation:slideUp .3s ease;
+}
+@keyframes slideUp {
+    from{transform:translateY(20px);opacity:0;}
+    to  {transform:translateY(0);opacity:1;}
+}
+.modal-head {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.2rem 1.5rem; border-bottom:1px solid var(--border);
+    background:linear-gradient(135deg,#f0fdf4,white);
+    border-radius:18px 18px 0 0; position:sticky; top:0; z-index:1;
+}
+.modal-head h3 { font-size:1rem; font-weight:800; display:flex; align-items:center; gap:7px; }
+.modal-head h3 i { color:var(--primary); }
+.modal-close {
+    background:#fee2e2; border:none; width:32px; height:32px;
+    border-radius:8px; cursor:pointer; color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.9rem; transition:all .2s;
+}
+.modal-close:hover { background:#fecaca; }
+.modal-body { padding:1.4rem 1.5rem; }
+.modal-section { margin-bottom:1.2rem; }
+.modal-section-title {
+    font-size:.75rem; font-weight:800; text-transform:uppercase;
+    letter-spacing:.5px; color:var(--text-muted); margin-bottom:.6rem;
+    display:flex; align-items:center; gap:5px;
+}
+.modal-section-title i { color:var(--primary); }
+.info-grid { display:grid; grid-template-columns:1fr 1fr; gap:.5rem; }
+.info-item { font-size:.87rem; color:var(--text); display:flex; align-items:flex-start; gap:7px; }
+.info-item i { color:var(--text-muted); width:14px; margin-top:2px; flex-shrink:0; }
+.info-item strong { color:var(--text); }
+.items-list { display:flex; flex-direction:column; gap:.5rem; }
+.order-item-row {
+    display:flex; align-items:center; justify-content:space-between;
+    background:#f8fafc; padding:.7rem 1rem; border-radius:8px;
+    font-size:.87rem;
+}
+.order-item-row .name  { font-weight:600; }
+.order-item-row .qty   { color:var(--text-muted); font-size:.82rem; }
+.order-item-row .price { font-weight:800; color:var(--primary-dark); }
+.totals-box { background:#f8fafc; border-radius:10px; padding:1rem; }
+.total-row { display:flex; justify-content:space-between; font-size:.87rem; color:var(--text-muted); padding:.3rem 0; }
+.total-row.grand { border-top:2px dashed var(--border); margin-top:.5rem; padding-top:.6rem; color:var(--text); font-weight:800; font-size:.97rem; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+    text-align:center; padding:3.5rem 2rem; color:var(--text-muted);
+}
+.empty-state i { font-size:3.5rem; color:#cbd5e0; display:block; margin-bottom:1rem; }
+.empty-state h3 { font-size:1.1rem; color:#4a5568; margin-bottom:.4rem; }
+.empty-state p  { font-size:.9rem; margin-bottom:1.2rem; }
+.shop-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    background:linear-gradient(135deg,#2ecc71,#27ae60); color:white;
+    text-decoration:none; padding:11px 22px; border-radius:10px;
+    font-weight:700; font-size:.92rem;
+    box-shadow:0 4px 14px rgba(39,174,96,.3); transition:all .2s;
+}
+.shop-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(39,174,96,.4); }
+
+/* ── ADDRESS CARD ── */
+.address-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); padding:1.3rem 1.5rem;
+    box-shadow:var(--shadow); margin-bottom:2rem;
+}
+.no-address { color:var(--text-muted); font-size:.9rem; font-style:italic; }
+
+/* ── TOAST ── */
+.db-toast {
+    position:fixed; bottom:20px; right:20px;
+    background:linear-gradient(135deg,#2ecc71,#27ae60); color:white;
+    padding:12px 18px; border-radius:10px; font-size:.88rem; font-weight:600;
+    box-shadow:0 8px 24px rgba(39,174,96,.35); z-index:9999;
+    transform:translateY(80px); opacity:0;
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);
+    display:flex; align-items:center; gap:8px;
+}
+.db-toast.show { transform:translateY(0); opacity:1; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px) {
+    .profile-card { flex-direction:column; text-align:center; gap:1rem; }
+    .profile-stats { margin-left:0; justify-content:center; }
+    .stats-row { grid-template-columns:1fr 1fr; }
+    .info-grid  { grid-template-columns:1fr; }
+    .page-wrap  { padding:1rem; }
+    .topbar     { padding:.75rem 1rem; }
+}
+@media(max-width:400px) {
+    .stats-row { grid-template-columns:1fr; }
+}
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-logo-icon"><i class="fas fa-shopping-cart"></i></div>
+        <a href="index.html" class="topbar-brand">FreshMart</a>
+    </div>
+    <div class="topbar-right">
+        <a href="index.html" class="topbar-btn"><i class="fas fa-store"></i> Shop</a>
+        <button type="button" class="topbar-btn logout" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</header>
+
+<div class="page-wrap">
+
+    <!-- PROFILE CARD -->
+    <div class="profile-card" id="profileCard">
+        <div class="profile-avatar" id="profileAvatar">U</div>
+        <div class="profile-info">
+            <h2 id="profileName">Loading...</h2>
+            <p id="profileEmail"></p>
+        </div>
+        <div class="profile-stats" id="profileStats"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- MY ORDERS -->
+    <div class="card">
+        <div class="card-header">
+            <h3><i class="fas fa-shopping-bag"></i> My Orders</h3>
+            <a href="index.html" class="new-order-btn">
+                <i class="fas fa-plus"></i> New Order
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="table-wrap">
+                <table>
+                    <thead><tr>
+                        <th>Order ID</th>
+                        <th>Date</th>
+                        <th>Items</th>
+                        <th>Total</th>
+                        <th>Payment</th>
+                        <th>Status</th>
+                        <th>Details</th>
+                    </tr></thead>
+                    <tbody id="ordersTbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- LAST DELIVERY ADDRESS -->
+    <p class="section-title"><i class="fas fa-map-marker-alt"></i> Last Delivery Address</p>
+    <div class="address-card" id="addressCard">
+        <p class="no-address">No orders yet.</p>
+    </div>
+
+</div>
+
+<!-- Order Detail Modal -->
+<div id="orderModal" style="display:none"></div>
+
+<!-- Toast -->
+<div class="db-toast" id="dbToast"></div>
+
+<script>
+// ── Auth guard ────────────────────────────────────────────
+const ADMIN_EMAILS = ['admin@freshmart.com','hn878283@gmail.com','princenigam972@gmail.com'];
+const rawUser = localStorage.getItem('fm_user');
+
+if (!rawUser) {
+    window.location.href = 'login.html';
+} else {
+    const u = JSON.parse(rawUser);
+    if (ADMIN_EMAILS.includes(u.email.toLowerCase())) {
+        window.location.href = 'admin.html';
+    }
+}
+
+// ── Helpers ───────────────────────────────────────────────
+const user     = JSON.parse(rawUser || '{}');
+const rupee    = n => '₹' + Number(n).toLocaleString('en-IN');
+const fmtDate  = iso => {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-IN',{ day:'2-digit', month:'short', year:'numeric' })
+         + ' ' + d.toLocaleTimeString('en-IN',{ hour:'2-digit', minute:'2-digit' });
+};
+const getOrders = () => JSON.parse(localStorage.getItem('fm_orders') || '[]');
+
+function statusBadge(s) {
+    const map  = { Pending:'s-pending', Confirmed:'s-confirmed', Preparing:'s-preparing', Shipped:'s-shipped', Delivered:'s-delivered', Cancelled:'s-cancelled' };
+    const icon = { Pending:'⏳', Confirmed:'✅', Preparing:'🍳', Shipped:'🚚', Delivered:'📦', Cancelled:'❌' };
+    return `<span class="status-badge ${map[s]||'s-pending'}">${icon[s]||''} ${s}</span>`;
+}
+
+function payClass(p) {
+    return { COD:'pay-cod', UPI:'pay-upi', Card:'pay-card', NetBanking:'pay-net' }[p] || 'pay-cod';
+}
+
+function toast(msg) {
+    const el = document.getElementById('dbToast');
+    el.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+    el.classList.add('show');
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ── Load data ─────────────────────────────────────────────
+function init() {
+    const initials = user.name
+        ? user.name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase()
+        : 'U';
+
+    document.getElementById('profileAvatar').textContent = initials;
+    document.getElementById('profileName').textContent   = user.name  || 'User';
+    document.getElementById('profileEmail').textContent  = user.email || '';
+
+    // My orders (filter by this user's email)
+    const allOrders = getOrders();
+    const myOrders  = allOrders.filter(o => o.customer && o.customer.email === user.email);
+
+    // Stats
+    const totalSpent   = myOrders.filter(o=>o.status!=='Cancelled').reduce((s,o)=>s+o.total,0);
+    const delivered    = myOrders.filter(o=>o.status==='Delivered').length;
+    const pending      = myOrders.filter(o=>!['Delivered','Cancelled'].includes(o.status)).length;
+
+    document.getElementById('profileStats').innerHTML = `
+        <div class="profile-stat"><strong>${myOrders.length}</strong><span>Orders</span></div>
+        <div class="profile-stat"><strong>${rupee(totalSpent)}</strong><span>Spent</span></div>
+        <div class="profile-stat"><strong>${delivered}</strong><span>Delivered</span></div>`;
+
+    document.getElementById('statsRow').innerHTML = `
+        <div class="stat-mini">
+            <div class="stat-mini-icon si-blue"><i class="fas fa-shopping-bag"></i></div>
+            <div><strong>${myOrders.length}</strong><span>Total Orders</span></div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-icon si-green"><i class="fas fa-rupee-sign"></i></div>
+            <div><strong>${rupee(totalSpent)}</strong><span>Total Spent</span></div>
+        </div>
+        <div class="stat-mini">
+            <div class="stat-mini-icon si-gold"><i class="fas fa-clock"></i></div>
+            <div><strong>${pending}</strong><span>Active Orders</span></div>
+        </div>`;
+
+    // Orders table
+    const tbody = document.getElementById('ordersTbody');
+    if (!myOrders.length) {
+        tbody.innerHTML = `
+            <tr><td colspan="7">
+                <div class="empty-state">
+                    <i class="fas fa-shopping-basket"></i>
+                    <h3>No orders yet!</h3>
+                    <p>Browse our fresh products and place your first order.</p>
+                    <a href="index.html" class="shop-btn"><i class="fas fa-shopping-cart"></i> Start Shopping</a>
+                </div>
+            </td></tr>`;
+    } else {
+        tbody.innerHTML = myOrders.map(o => `
+            <tr>
+                <td class="order-id">${o.orderId}</td>
+                <td style="font-size:.8rem;color:#718096;white-space:nowrap">${fmtDate(o.date)}</td>
+                <td class="order-items">${o.items.length} item${o.items.length>1?'s':''}</td>
+                <td class="order-amt">${rupee(o.total)}</td>
+                <td><span class="pay-badge ${payClass(o.payment)}">${o.payment}</span></td>
+                <td>${statusBadge(o.status)}</td>
+                <td>
+                    <button type="button" class="btn-detail" onclick="openDetail('${o.orderId}')">
+                        <i class="fas fa-eye"></i> View
+                    </button>
+                </td>
+            </tr>`).join('');
+    }
+
+    // Last address
+    const lastOrder = myOrders[0];
+    const addrCard  = document.getElementById('addressCard');
+    if (lastOrder && lastOrder.address) {
+        const a = lastOrder.address;
+        addrCard.innerHTML = `
+            <div style="display:flex;align-items:flex-start;gap:14px;">
+                <div style="width:42px;height:42px;background:#f0fdf4;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--primary);font-size:1.1rem;flex-shrink:0;border:1px solid #c6f6d5;">
+                    <i class="fas fa-map-marker-alt"></i>
+                </div>
+                <div>
+                    <div style="font-weight:700;font-size:.95rem;margin-bottom:.3rem">${a.street}</div>
+                    ${a.landmark ? `<div style="font-size:.85rem;color:#718096;margin-bottom:.2rem">📍 ${a.landmark}</div>` : ''}
+                    <div style="font-size:.88rem;color:#718096">${a.area}, ${a.city}, ${a.state} — <strong style="color:var(--primary-dark)">${a.pincode}</strong></div>
+                    <div style="font-size:.8rem;color:#a0aec0;margin-top:.3rem">Used in order ${lastOrder.orderId}</div>
+                </div>
+            </div>`;
+    }
+}
+
+// ── Order Detail Modal ────────────────────────────────────
+function openDetail(orderId) {
+    const o = getOrders().find(x => x.orderId === orderId);
+    if (!o) return;
+
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'block';
+    modal.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeDetail()">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3><i class="fas fa-receipt"></i> Order ${o.orderId}</h3>
+                <button type="button" class="modal-close" onclick="closeDetail()" aria-label="Close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Status -->
+                <div class="modal-section">
+                    <div style="display:flex;align-items:center;gap:10px;padding:.8rem 1rem;background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+                        <span style="font-weight:700;font-size:.88rem">Status:</span>
+                        ${statusBadge(o.status)}
+                        <span style="margin-left:auto;font-size:.82rem;color:#718096">${fmtDate(o.date)}</span>
+                    </div>
+                </div>
+
+                <!-- Items -->
+                <div class="modal-section">
+                    <div class="modal-section-title"><i class="fas fa-box"></i> Items Ordered</div>
+                    <div class="items-list">
+                        ${o.items.map(it => `
+                        <div class="order-item-row">
+                            <div>
+                                <div class="name">${it.name}</div>
+                                <div class="qty">${it.category} • ${it.unit}</div>
+                            </div>
+                            <div style="display:flex;align-items:center;gap:1.5rem">
+                                <span style="font-size:.85rem;color:#718096">×${it.quantity}</span>
+                                <span class="price">${rupee(it.subtotal)}</span>
+                            </div>
+                        </div>`).join('')}
+                    </div>
+                </div>
+
+                <!-- Totals -->
+                <div class="modal-section">
+                    <div class="totals-box">
+                        <div class="total-row"><span>Subtotal</span><span>${rupee(o.subtotal)}</span></div>
+                        <div class="total-row"><span>Delivery</span><span>${o.delivery===0?'🎉 FREE':rupee(o.delivery)}</span></div>
+                        <div class="total-row grand"><span>Total Paid</span><span>${rupee(o.total)}</span></div>
+                    </div>
+                </div>
+
+                <!-- Delivery Address -->
+                <div class="modal-section">
+                    <div class="modal-section-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</div>
+                    <div style="background:#f8fafc;border-radius:10px;padding:.9rem 1rem;border:1px solid var(--border);font-size:.87rem;line-height:1.7;">
+                        <div><strong>${o.address.street}</strong></div>
+                        ${o.address.landmark ? `<div style="color:#718096">📍 ${o.address.landmark}</div>` : ''}
+                        <div>${o.address.area}, ${o.address.city}, ${o.address.state}</div>
+                        <div>PIN: <strong>${o.address.pincode}</strong></div>
+                        ${o.notes ? `<div style="color:#718096;margin-top:.3rem">📝 ${o.notes}</div>` : ''}
+                    </div>
+                </div>
+
+                <!-- Payment -->
+                <div class="modal-section">
+                    <div class="modal-section-title"><i class="fas fa-credit-card"></i> Payment</div>
+                    <div style="display:flex;align-items:center;gap:10px;padding:.7rem 1rem;background:#f8fafc;border-radius:10px;border:1px solid var(--border);">
+                        <span class="pay-badge ${payClass(o.payment)}" style="font-size:.88rem;padding:4px 12px">${o.payment}</span>
+                        <span style="font-size:.85rem;color:#718096">Order ID: ${o.orderId}</span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>`;
+}
+
+function closeDetail() {
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'none';
+    modal.innerHTML = '';
+}
+
+// ── Logout ────────────────────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('fm_user');
+    window.location.href = 'login.html';
+});
+
+// ── ESC close ─────────────────────────────────────────────
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeDetail(); });
+
+// ── Init ─────────────────────────────────────────────────
+init();
+</script>
+
+</body>
+</html>
