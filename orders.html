@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart — My Orders</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+    --primary:      #27ae60;
+    --primary-dark: #219150;
+    --accent:       #e74c3c;
+    --text:         #1a202c;
+    --text-muted:   #718096;
+    --border:       #e2e8f0;
+    --bg:           #f7fafc;
+    --card:         #ffffff;
+    --radius:       14px;
+    --shadow:       0 2px 16px rgba(0,0,0,.08);
+}
+body {
+    font-family:'Inter','Segoe UI',system-ui,sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+
+/* TOPBAR */
+.topbar {
+    background:linear-gradient(135deg,#2ecc71,#27ae60);
+    padding:.85rem 2rem; display:flex; align-items:center;
+    justify-content:space-between;
+    box-shadow:0 2px 12px rgba(39,174,96,.3);
+    position:sticky; top:0; z-index:100;
+}
+.topbar-left  { display:flex; align-items:center; gap:12px; }
+.topbar-logo  { width:38px; height:38px; background:rgba(255,255,255,.25); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:1.1rem; color:white; }
+.topbar-brand { font-size:1.2rem; font-weight:800; color:white; text-decoration:none; }
+.topbar-right { display:flex; align-items:center; gap:8px; }
+.t-btn {
+    background:rgba(255,255,255,.2); color:white; border:none;
+    padding:7px 14px; border-radius:8px; font-size:.85rem; font-weight:600;
+    cursor:pointer; text-decoration:none;
+    display:flex; align-items:center; gap:6px; transition:all .2s;
+}
+.t-btn:hover { background:rgba(255,255,255,.35); }
+.t-btn.red   { background:rgba(231,76,60,.25); }
+.t-btn.red:hover { background:rgba(231,76,60,.45); }
+
+/* PAGE */
+.page { max-width:1000px; margin:0 auto; padding:2rem 1.5rem; }
+
+/* PAGE HEADER */
+.page-header {
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:1.8rem; flex-wrap:wrap; gap:1rem;
+}
+.page-header h1 { font-size:1.5rem; font-weight:800; color:var(--text); display:flex; align-items:center; gap:10px; }
+.page-header h1 i { color:var(--primary); }
+
+/* STATS STRIP */
+.stats-strip {
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:1rem; margin-bottom:1.8rem;
+}
+.ss-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); padding:1.1rem 1.3rem;
+    display:flex; align-items:center; gap:.9rem;
+    box-shadow:var(--shadow); transition:all .2s;
+}
+.ss-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(0,0,0,.1); }
+.ss-icon {
+    width:42px; height:42px; border-radius:11px;
+    display:flex; align-items:center; justify-content:center; font-size:1.1rem; flex-shrink:0;
+}
+.si-blue   { background:#eff6ff; color:#3b82f6; }
+.si-green  { background:#f0fdf4; color:var(--primary); }
+.si-gold   { background:#fffbeb; color:#d97706; }
+.si-red    { background:#fef2f2; color:var(--accent); }
+.ss-card strong { display:block; font-size:1.35rem; font-weight:800; color:var(--text); line-height:1; }
+.ss-card span   { font-size:.78rem; color:var(--text-muted); margin-top:.2rem; display:block; }
+
+/* FILTER BAR */
+.filter-bar {
+    display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; margin-bottom:1.2rem;
+}
+.filter-select {
+    padding:9px 14px; border:1.5px solid var(--border); border-radius:9px;
+    font-size:.88rem; background:white; outline:none; cursor:pointer;
+    color:var(--text); transition:border-color .2s;
+}
+.filter-select:focus { border-color:var(--primary); }
+
+/* ORDERS LIST */
+.order-card {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+    margin-bottom:1rem; overflow:hidden;
+    transition:all .2s;
+}
+.order-card:hover { box-shadow:0 6px 24px rgba(0,0,0,.1); transform:translateY(-1px); }
+
+.order-card-head {
+    padding:1rem 1.4rem; display:flex; align-items:center;
+    gap:1rem; flex-wrap:wrap;
+    border-bottom:1px solid #f1f5f9;
+    background:linear-gradient(135deg,#f8fffe,white);
+}
+.order-id   { font-weight:800; font-size:.92rem; color:var(--primary-dark); }
+.order-date { font-size:.8rem; color:var(--text-muted); }
+.order-head-right { margin-left:auto; display:flex; align-items:center; gap:.8rem; }
+.order-total { font-weight:800; font-size:1.05rem; color:var(--text); }
+
+.order-card-body {
+    padding:1rem 1.4rem; display:flex; align-items:center;
+    gap:1rem; flex-wrap:wrap;
+}
+.order-items-preview {
+    flex:1; display:flex; gap:.5rem; flex-wrap:wrap; align-items:center;
+}
+.item-chip {
+    background:#f0fdf4; border:1px solid #c6f6d5;
+    color:#166534; padding:3px 10px; border-radius:20px;
+    font-size:.78rem; font-weight:600;
+}
+.item-chip-more {
+    background:#f1f5f9; border:1px solid var(--border);
+    color:var(--text-muted); padding:3px 10px; border-radius:20px;
+    font-size:.78rem; font-weight:600;
+}
+.order-card-actions { display:flex; align-items:center; gap:.6rem; }
+.btn-view {
+    background:#f0fdf4; color:var(--primary-dark); border:none;
+    padding:7px 14px; border-radius:8px; font-size:.85rem; font-weight:700;
+    cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:5px;
+}
+.btn-view:hover { background:#dcfce7; }
+
+/* Status badges */
+.status-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    padding:4px 10px; border-radius:20px;
+    font-size:.75rem; font-weight:700; white-space:nowrap;
+}
+.status-badge::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex-shrink:0; }
+.s-pending   { background:#fffbeb; color:#d97706; }
+.s-confirmed { background:#eff6ff; color:#2563eb; }
+.s-preparing { background:#faf5ff; color:#7c3aed; }
+.s-shipped   { background:#fff7ed; color:#c2410c; }
+.s-delivered { background:#f0fdf4; color:#16a34a; }
+.s-cancelled { background:#fef2f2; color:#dc2626; }
+
+.pay-badge   { font-size:.78rem; font-weight:700; padding:3px 8px; border-radius:12px; }
+.pay-cod  { background:#fffbeb; color:#d97706; }
+.pay-upi  { background:#eff6ff; color:#2563eb; }
+.pay-card { background:#f0fdf4; color:#16a34a; }
+.pay-net  { background:#faf5ff; color:#7c3aed; }
+
+/* Empty state */
+.empty-wrap {
+    text-align:center; padding:5rem 2rem; color:var(--text-muted);
+}
+.empty-wrap i { font-size:4rem; color:#cbd5e0; display:block; margin-bottom:1rem; }
+.empty-wrap h3 { font-size:1.2rem; color:#4a5568; margin-bottom:.5rem; }
+.empty-wrap p  { font-size:.92rem; margin-bottom:1.5rem; }
+.shop-btn {
+    display:inline-flex; align-items:center; gap:8px;
+    background:linear-gradient(135deg,#2ecc71,#27ae60); color:white;
+    text-decoration:none; padding:12px 24px; border-radius:10px;
+    font-weight:700; font-size:.95rem;
+    box-shadow:0 4px 14px rgba(39,174,96,.3); transition:all .2s;
+}
+.shop-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(39,174,96,.4); }
+.new-order-link { font-size:.88rem; padding:9px 18px; }
+
+/* Order Detail Modal */
+.modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:500;
+    display:flex; align-items:center; justify-content:center; padding:1rem;
+    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+}
+.modal-box {
+    background:white; border-radius:18px; width:100%; max-width:580px;
+    max-height:88vh; overflow-y:auto;
+    box-shadow:0 25px 80px rgba(0,0,0,.25); animation:slideUp .3s ease;
+}
+@keyframes slideUp {
+    from{transform:translateY(20px);opacity:0;}
+    to  {transform:translateY(0);opacity:1;}
+}
+.modal-head {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.2rem 1.5rem; border-bottom:1px solid var(--border);
+    background:linear-gradient(135deg,#f0fdf4,white);
+    border-radius:18px 18px 0 0; position:sticky; top:0; z-index:1;
+}
+.modal-head h3 { font-size:1rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+.modal-head h3 i { color:var(--primary); }
+.modal-close {
+    background:#fee2e2; border:none; width:32px; height:32px;
+    border-radius:8px; cursor:pointer; color:var(--accent);
+    display:flex; align-items:center; justify-content:center; font-size:.9rem; transition:all .2s;
+}
+.modal-close:hover { background:#fecaca; }
+.modal-body { padding:1.4rem 1.5rem; }
+.ms-title { font-size:.75rem; font-weight:800; text-transform:uppercase; letter-spacing:.5px; color:var(--text-muted); margin-bottom:.6rem; display:flex; align-items:center; gap:5px; }
+.ms-title i { color:var(--primary); }
+.ms-block { background:#f8fafc; border:1px solid var(--border); border-radius:10px; padding:.9rem 1rem; margin-bottom:1.2rem; font-size:.87rem; line-height:1.7; }
+.ms-block strong { color:var(--text); }
+.ms-block .dim { color:var(--text-muted); }
+.items-list { display:flex; flex-direction:column; gap:.5rem; margin-bottom:1.2rem; }
+.item-row { display:flex; align-items:center; justify-content:space-between; background:#f8fafc; padding:.7rem 1rem; border-radius:8px; font-size:.87rem; }
+.item-row .iname { font-weight:600; }
+.item-row .icat  { font-size:.78rem; color:var(--text-muted); }
+.item-row .iprice { font-weight:800; color:var(--primary-dark); }
+.totals-box { background:#f8fafc; border-radius:10px; padding:1rem; }
+.t-row { display:flex; justify-content:space-between; font-size:.87rem; color:var(--text-muted); padding:.3rem 0; }
+.t-row.grand { border-top:2px dashed var(--border); margin-top:.5rem; padding-top:.6rem; color:var(--text); font-weight:800; font-size:.97rem; }
+
+/* Track bar */
+.track-bar { display:flex; align-items:center; margin-bottom:1.5rem; }
+.track-step { display:flex; flex-direction:column; align-items:center; flex:1; }
+.track-dot  { width:28px; height:28px; border-radius:50%; border:2px solid var(--border); background:white; display:flex; align-items:center; justify-content:center; font-size:.7rem; color:var(--text-muted); margin-bottom:.3rem; transition:all .3s; }
+.track-dot.done { background:var(--primary); border-color:var(--primary); color:white; }
+.track-dot.active { background:var(--primary); border-color:var(--primary); color:white; box-shadow:0 0 0 4px rgba(39,174,96,.2); }
+.track-label { font-size:.68rem; font-weight:600; color:var(--text-muted); text-align:center; }
+.track-label.done { color:var(--primary); }
+.track-line { flex:1; height:2px; background:var(--border); margin-bottom:1.2rem; }
+.track-line.done { background:var(--primary); }
+
+/* Responsive */
+@media(max-width:640px) {
+    .stats-strip { grid-template-columns:1fr 1fr; }
+    .page { padding:1rem; }
+    .topbar { padding:.75rem 1rem; }
+    .order-card-head { flex-direction:column; align-items:flex-start; gap:.5rem; }
+    .order-head-right { margin-left:0; }
+}
+@media(max-width:400px) {
+    .stats-strip { grid-template-columns:1fr; }
+}
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-logo"><i class="fas fa-shopping-cart"></i></div>
+        <a href="index.html" class="topbar-brand">FreshMart</a>
+    </div>
+    <div class="topbar-right">
+        <a href="profile.html" class="t-btn"><i class="fas fa-user"></i> My Profile</a>
+        <a href="index.html" class="t-btn"><i class="fas fa-store"></i> Shop</a>
+        <button type="button" class="t-btn red" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</header>
+
+<div class="page">
+
+    <div class="page-header">
+        <h1><i class="fas fa-shopping-bag"></i> My Orders</h1>
+        <a href="index.html" class="shop-btn new-order-link">
+            <i class="fas fa-plus"></i> New Order
+        </a>
+    </div>
+
+    <!-- STATS STRIP -->
+    <div class="stats-strip" id="statsStrip"></div>
+
+    <!-- FILTER -->
+    <div class="filter-bar">
+        <select class="filter-select" id="statusFilter" aria-label="Filter by status" title="Filter by order status">
+            <option value="">All Orders</option>
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Preparing">Preparing</option>
+            <option value="Shipped">Out for Delivery</option>
+            <option value="Delivered">Delivered</option>
+            <option value="Cancelled">Cancelled</option>
+        </select>
+        <select class="filter-select" id="payFilter" aria-label="Filter by payment" title="Filter by payment method">
+            <option value="">All Payments</option>
+            <option value="COD">Cash on Delivery</option>
+            <option value="UPI">UPI</option>
+            <option value="Card">Card</option>
+            <option value="NetBanking">Net Banking</option>
+        </select>
+    </div>
+
+    <!-- ORDERS LIST -->
+    <div id="ordersList"></div>
+
+</div>
+
+<!-- Modal container -->
+<div id="orderModal" style="display:none"></div>
+
+<script>
+// ── Auth Guard ────────────────────────────────────────────
+const ADMIN_EMAILS = ['admin@freshmart.com','hn878283@gmail.com','princenigam972@gmail.com'];
+const rawUser = localStorage.getItem('fm_user');
+if (!rawUser) { window.location.href = 'login.html'; }
+const user = JSON.parse(rawUser || '{}');
+if (ADMIN_EMAILS.includes(user.email?.toLowerCase())) { window.location.href = 'admin.html'; }
+
+// ── Helpers ───────────────────────────────────────────────
+const getOrders = () => JSON.parse(localStorage.getItem('fm_orders') || '[]')
+                          .filter(o => o.customer?.email === user.email);
+const rupee   = n => '₹' + Number(n).toLocaleString('en-IN');
+const fmtDate = iso => {
+    const d = new Date(iso);
+    return d.toLocaleDateString('en-IN',{ day:'2-digit', month:'short', year:'numeric' })
+         + ' ' + d.toLocaleTimeString('en-IN',{ hour:'2-digit', minute:'2-digit' });
+};
+
+function statusBadge(s) {
+    const cls  = { Pending:'s-pending', Confirmed:'s-confirmed', Preparing:'s-preparing', Shipped:'s-shipped', Delivered:'s-delivered', Cancelled:'s-cancelled' };
+    const icon = { Pending:'⏳', Confirmed:'✅', Preparing:'🍳', Shipped:'🚚', Delivered:'📦', Cancelled:'❌' };
+    return `<span class="status-badge ${cls[s]||'s-pending'}">${icon[s]||''} ${s}</span>`;
+}
+function payClass(p) {
+    return { COD:'pay-cod', UPI:'pay-upi', Card:'pay-card', NetBanking:'pay-net' }[p] || 'pay-cod';
+}
+
+// ── Render ────────────────────────────────────────────────
+function render() {
+    const all = getOrders();
+    const sf  = document.getElementById('statusFilter').value;
+    const pf  = document.getElementById('payFilter').value;
+
+    let orders = all;
+    if (sf) orders = orders.filter(o => o.status === sf);
+    if (pf) orders = orders.filter(o => o.payment === pf);
+
+    // Stats strip
+    const totalSpent  = all.filter(o=>o.status!=='Cancelled').reduce((s,o)=>s+o.total,0);
+    const delivered   = all.filter(o=>o.status==='Delivered').length;
+    const active      = all.filter(o=>!['Delivered','Cancelled'].includes(o.status)).length;
+    const cancelled   = all.filter(o=>o.status==='Cancelled').length;
+
+    document.getElementById('statsStrip').innerHTML = `
+        <div class="ss-card"><div class="ss-icon si-blue"><i class="fas fa-shopping-bag"></i></div><div><strong>${all.length}</strong><span>Total Orders</span></div></div>
+        <div class="ss-card"><div class="ss-icon si-green"><i class="fas fa-rupee-sign"></i></div><div><strong>${rupee(totalSpent)}</strong><span>Total Spent</span></div></div>
+        <div class="ss-card"><div class="ss-icon si-gold"><i class="fas fa-clock"></i></div><div><strong>${active}</strong><span>Active</span></div></div>
+        <div class="ss-card"><div class="ss-icon si-red"><i class="fas fa-check-circle"></i></div><div><strong>${delivered}</strong><span>Delivered</span></div></div>`;
+
+    const list = document.getElementById('ordersList');
+
+    if (!orders.length) {
+        list.innerHTML = `
+            <div class="empty-wrap">
+                <i class="fas fa-shopping-basket"></i>
+                <h3>${all.length ? 'No orders match this filter' : 'No orders yet!'}</h3>
+                <p>${all.length ? 'Try changing the filter.' : 'Browse fresh products and place your first order.'}</p>
+                ${!all.length ? `<a href="index.html" class="shop-btn"><i class="fas fa-shopping-cart"></i> Start Shopping</a>` : ''}
+            </div>`;
+        return;
+    }
+
+    list.innerHTML = orders.map(o => {
+        const chips = o.items.slice(0,3).map(it => `<span class="item-chip">${it.name}</span>`).join('');
+        const more  = o.items.length > 3 ? `<span class="item-chip-more">+${o.items.length-3} more</span>` : '';
+        return `
+        <div class="order-card">
+            <div class="order-card-head">
+                <div>
+                    <div class="order-id">${o.orderId}</div>
+                    <div class="order-date"><i class="fas fa-clock" style="margin-right:4px;color:#a0aec0"></i>${fmtDate(o.date)}</div>
+                </div>
+                <div class="order-head-right">
+                    ${statusBadge(o.status)}
+                    <span class="pay-badge ${payClass(o.payment)}">${o.payment}</span>
+                    <span class="order-total">${rupee(o.total)}</span>
+                </div>
+            </div>
+            <div class="order-card-body">
+                <div class="order-items-preview">${chips}${more}</div>
+                <div class="order-card-actions">
+                    <button type="button" class="btn-view" onclick="openDetail('${o.orderId}')">
+                        <i class="fas fa-eye"></i> View Details
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+document.getElementById('statusFilter').addEventListener('change', render);
+document.getElementById('payFilter').addEventListener('change', render);
+
+// ── Order Detail ──────────────────────────────────────────
+function openDetail(orderId) {
+    const all = JSON.parse(localStorage.getItem('fm_orders') || '[]');
+    const o   = all.find(x => x.orderId === orderId);
+    if (!o) return;
+
+    // Track steps
+    const steps  = ['Pending','Confirmed','Preparing','Shipped','Delivered'];
+    const stepIdx = steps.indexOf(o.status);
+    const isCancelled = o.status === 'Cancelled';
+
+    let trackHtml = '';
+    if (!isCancelled) {
+        const icons = ['clock','check','utensils','truck','box'];
+        trackHtml = `<div class="track-bar">`;
+        steps.forEach((s, i) => {
+            const isDone   = stepIdx > i;
+            const isActive = stepIdx === i;
+            if (i > 0) trackHtml += `<div class="track-line${isDone?' done':''}"></div>`;
+            trackHtml += `
+                <div class="track-step">
+                    <div class="track-dot${isDone||isActive?' done':''}${isActive?' active':''}">
+                        <i class="fas fa-${icons[i]}"></i>
+                    </div>
+                    <div class="track-label${isDone||isActive?' done':''}">${s}</div>
+                </div>`;
+        });
+        trackHtml += `</div>`;
+    }
+
+    const modal = document.getElementById('orderModal');
+    modal.style.display = 'block';
+    modal.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeDetail()">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3><i class="fas fa-receipt"></i> Order ${o.orderId}</h3>
+                <button type="button" class="modal-close" onclick="closeDetail()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+
+                <!-- Status + date -->
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.4rem;padding:.8rem 1rem;background:#f8fafc;border-radius:10px;border:1px solid var(--border)">
+                    ${statusBadge(o.status)}
+                    <span style="margin-left:auto;font-size:.82rem;color:#718096">${fmtDate(o.date)}</span>
+                </div>
+
+                <!-- Track bar -->
+                ${trackHtml}
+
+                <!-- Items -->
+                <div class="ms-title"><i class="fas fa-box"></i> Items Ordered</div>
+                <div class="items-list">
+                    ${o.items.map(it=>`
+                    <div class="item-row">
+                        <div>
+                            <div class="iname">${it.name}</div>
+                            <div class="icat">${it.category} • ${it.unit} × ${it.quantity}</div>
+                        </div>
+                        <div class="iprice">${rupee(it.subtotal)}</div>
+                    </div>`).join('')}
+                </div>
+
+                <!-- Totals -->
+                <div class="totals-box" style="margin-bottom:1.2rem">
+                    <div class="t-row"><span>Subtotal</span><span>${rupee(o.subtotal)}</span></div>
+                    <div class="t-row"><span>Delivery</span><span>${o.delivery===0?'🎉 FREE':rupee(o.delivery)}</span></div>
+                    <div class="t-row grand"><span>Total Paid</span><span>${rupee(o.total)}</span></div>
+                </div>
+
+                <!-- Delivery Address -->
+                <div class="ms-title"><i class="fas fa-map-marker-alt"></i> Delivery Address</div>
+                <div class="ms-block">
+                    <div><strong>${o.address.street}</strong></div>
+                    ${o.address.landmark?`<div class="dim"><i class="fas fa-map-pin" style="margin-right:4px"></i>${o.address.landmark}</div>`:''}
+                    <div>${o.address.area}, ${o.address.city}, ${o.address.state}</div>
+                    <div>PIN: <strong>${o.address.pincode}</strong></div>
+                    ${o.notes?`<div class="dim" style="margin-top:.3rem">📝 ${o.notes}</div>`:''}
+                </div>
+
+                <!-- Payment -->
+                <div class="ms-title"><i class="fas fa-credit-card"></i> Payment</div>
+                <div style="display:flex;align-items:center;gap:10px;padding:.7rem 1rem;background:#f8fafc;border-radius:10px;border:1px solid var(--border)">
+                    <span class="pay-badge ${payClass(o.payment)}" style="font-size:.88rem;padding:4px 14px">${o.payment}</span>
+                    <span style="font-size:.82rem;color:#718096">Order ID: ${o.orderId}</span>
+                </div>
+
+            </div>
+        </div>
+    </div>`;
+}
+
+function closeDetail() {
+    const m = document.getElementById('orderModal');
+    m.style.display = 'none';
+    m.innerHTML = '';
+}
+
+// ── Logout ────────────────────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('fm_user');
+    window.location.href = 'login.html';
+});
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeDetail(); });
+
+render();
+</script>
+</body>
+</html>

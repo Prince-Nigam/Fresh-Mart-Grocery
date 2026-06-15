@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FreshMart — My Profile</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+:root {
+    --primary:      #27ae60;
+    --primary-dark: #219150;
+    --primary-light:#2ecc71;
+    --accent:       #e74c3c;
+    --text:         #1a202c;
+    --text-muted:   #718096;
+    --border:       #e2e8f0;
+    --bg:           #f7fafc;
+    --card:         #ffffff;
+    --radius:       14px;
+    --shadow:       0 2px 16px rgba(0,0,0,.08);
+}
+body {
+    font-family:'Inter','Segoe UI',system-ui,sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; -webkit-font-smoothing:antialiased;
+}
+
+/* TOPBAR */
+.topbar {
+    background:linear-gradient(135deg,#2ecc71,#27ae60);
+    padding:.85rem 2rem; display:flex; align-items:center;
+    justify-content:space-between;
+    box-shadow:0 2px 12px rgba(39,174,96,.3);
+    position:sticky; top:0; z-index:100;
+}
+.topbar-left  { display:flex; align-items:center; gap:12px; }
+.topbar-logo  {
+    width:38px; height:38px; background:rgba(255,255,255,.25);
+    border-radius:10px; display:flex; align-items:center;
+    justify-content:center; font-size:1.1rem; color:white;
+}
+.topbar-brand { font-size:1.2rem; font-weight:800; color:white; text-decoration:none; }
+.topbar-right { display:flex; align-items:center; gap:8px; }
+.t-btn {
+    background:rgba(255,255,255,.2); color:white; border:none;
+    padding:7px 14px; border-radius:8px; font-size:.85rem; font-weight:600;
+    cursor:pointer; text-decoration:none;
+    display:flex; align-items:center; gap:6px; transition:all .2s;
+}
+.t-btn:hover { background:rgba(255,255,255,.35); }
+.t-btn.red   { background:rgba(231,76,60,.25); }
+.t-btn.red:hover { background:rgba(231,76,60,.45); }
+
+/* PAGE */
+.page { max-width:760px; margin:0 auto; padding:2rem 1.5rem; }
+
+/* HERO PROFILE CARD */
+.hero-card {
+    background:linear-gradient(135deg,#1a7a45,#27ae60,#52d68a);
+    border-radius:22px; padding:2rem 2.4rem;
+    display:flex; align-items:center; gap:1.8rem;
+    margin-bottom:2rem; color:white;
+    box-shadow:0 10px 35px rgba(39,174,96,.35);
+    position:relative; overflow:hidden;
+}
+.hero-card::before {
+    content:''; position:absolute; top:-50px; right:-50px;
+    width:200px; height:200px; background:rgba(255,255,255,.06); border-radius:50%;
+}
+.hero-card::after {
+    content:''; position:absolute; bottom:-40px; right:100px;
+    width:130px; height:130px; background:rgba(255,255,255,.04); border-radius:50%;
+}
+.hero-avatar {
+    width:80px; height:80px; background:rgba(255,255,255,.25);
+    border:3px solid rgba(255,255,255,.55); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:2rem; font-weight:800; color:white; flex-shrink:0; z-index:1;
+}
+.hero-info { z-index:1; flex:1; }
+.hero-info h2  { font-size:1.6rem; font-weight:800; margin-bottom:.25rem; }
+.hero-info p   { font-size:.9rem; opacity:.85; margin-bottom:.1rem; }
+.hero-info small { font-size:.78rem; opacity:.65; }
+.hero-edit-btn {
+    background:rgba(255,255,255,.2); color:white; border:none;
+    padding:9px 18px; border-radius:10px; font-size:.88rem; font-weight:700;
+    cursor:pointer; transition:all .2s; z-index:1;
+    display:flex; align-items:center; gap:6px;
+}
+.hero-edit-btn:hover { background:rgba(255,255,255,.35); transform:translateY(-1px); }
+
+/* INFO SECTIONS */
+.info-section {
+    background:var(--card); border:1px solid var(--border);
+    border-radius:var(--radius); box-shadow:var(--shadow);
+    margin-bottom:1.4rem; overflow:hidden;
+}
+.info-section-head {
+    padding:1rem 1.4rem; background:linear-gradient(135deg,#f0fdf4,white);
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+}
+.info-section-head h3 {
+    font-size:.92rem; font-weight:800; color:var(--text);
+    display:flex; align-items:center; gap:8px; text-transform:uppercase;
+    letter-spacing:.4px;
+}
+.info-section-head h3 i { color:var(--primary); font-size:.9rem; }
+.edit-btn {
+    background:#f0fdf4; color:var(--primary-dark); border:none;
+    padding:5px 12px; border-radius:7px; font-size:.78rem; font-weight:700;
+    cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:4px;
+}
+.edit-btn:hover { background:#dcfce7; }
+.info-section-body { padding:1.4rem; }
+
+/* Info row */
+.info-row {
+    display:flex; align-items:flex-start; gap:12px;
+    padding:.75rem 0; border-bottom:1px solid #f1f5f9;
+}
+.info-row:last-child { border-bottom:none; padding-bottom:0; }
+.info-icon {
+    width:36px; height:36px; border-radius:9px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:.9rem;
+}
+.ic-green  { background:#f0fdf4; color:var(--primary); }
+.ic-blue   { background:#eff6ff; color:#3b82f6; }
+.ic-purple { background:#faf5ff; color:#7c3aed; }
+.ic-gold   { background:#fffbeb; color:#d97706; }
+.ic-red    { background:#fef2f2; color:#dc2626; }
+.info-label { font-size:.75rem; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.4px; margin-bottom:.25rem; }
+.info-value { font-size:.95rem; font-weight:600; color:var(--text); }
+.info-value.empty { color:#a0aec0; font-style:italic; font-weight:400; }
+
+/* Address card */
+.addr-block {
+    background:#f8fffe; border:1px solid #c6f6d5;
+    border-radius:10px; padding:1rem 1.2rem;
+    font-size:.88rem; line-height:1.8; color:var(--text);
+}
+.addr-block .addr-street { font-weight:700; font-size:.95rem; margin-bottom:.2rem; }
+.addr-block .addr-landmark { color:var(--text-muted); font-size:.85rem; }
+.addr-block .addr-city   { color:#374151; }
+.addr-block .addr-pin    { font-weight:800; color:var(--primary-dark); }
+.no-addr { color:#a0aec0; font-size:.9rem; font-style:italic; padding:.5rem 0; }
+
+/* Account badges */
+.badge-row { display:flex; gap:.6rem; flex-wrap:wrap; margin-top:.5rem; }
+.acc-badge {
+    padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:700;
+    display:inline-flex; align-items:center; gap:5px;
+}
+.acc-badge.green { background:#f0fdf4; color:#16a34a; }
+.acc-badge.blue  { background:#eff6ff; color:#2563eb; }
+.acc-badge.gold  { background:#fffbeb; color:#d97706; }
+
+/* Edit modal */
+.modal-overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:500;
+    display:flex; align-items:center; justify-content:center; padding:1rem;
+    -webkit-backdrop-filter:blur(4px); backdrop-filter:blur(4px);
+}
+.modal-box {
+    background:white; border-radius:18px; width:100%; max-width:500px;
+    max-height:90vh; overflow-y:auto;
+    box-shadow:0 25px 80px rgba(0,0,0,.25); animation:slideUp .3s ease;
+}
+@keyframes slideUp {
+    from{transform:translateY(20px);opacity:0;}
+    to  {transform:translateY(0);opacity:1;}
+}
+.modal-head {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.2rem 1.5rem; border-bottom:1px solid var(--border);
+    background:linear-gradient(135deg,#f0fdf4,white);
+    border-radius:18px 18px 0 0; position:sticky; top:0; z-index:1;
+}
+.modal-head h3 { font-size:1rem; font-weight:800; display:flex; align-items:center; gap:8px; }
+.modal-head h3 i { color:var(--primary); }
+.modal-close {
+    background:#fee2e2; border:none; width:32px; height:32px;
+    border-radius:8px; cursor:pointer; color:var(--accent);
+    display:flex; align-items:center; justify-content:center;
+    font-size:.9rem; transition:all .2s;
+}
+.modal-close:hover { background:#fecaca; }
+.modal-body { padding:1.5rem; }
+
+.mf-field { margin-bottom:1.1rem; }
+.mf-field label { display:block; font-size:.85rem; font-weight:700; color:#374151; margin-bottom:.4rem; }
+.mf-wrap { position:relative; }
+.mf-wrap i { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#aaa; font-size:.88rem; pointer-events:none; }
+.mf-wrap input, .mf-wrap select, .mf-wrap textarea {
+    width:100%; padding:10px 12px 10px 36px;
+    border:1.5px solid #e5e7eb; border-radius:9px;
+    font-size:.93rem; outline:none;
+    transition:border-color .2s, box-shadow .2s;
+    background:#fafafa; color:var(--text);
+    font-family:inherit;
+}
+.mf-wrap input:focus, .mf-wrap select:focus, .mf-wrap textarea:focus {
+    border-color:var(--primary);
+    box-shadow:0 0 0 3px rgba(39,174,96,.12);
+    background:white;
+}
+.mf-row { display:grid; grid-template-columns:1fr 1fr; gap:.9rem; }
+.save-btn {
+    width:100%; background:linear-gradient(135deg,#2ecc71,#27ae60);
+    color:white; border:none; padding:13px; border-radius:10px;
+    font-size:.97rem; font-weight:700; cursor:pointer; transition:all .2s;
+    box-shadow:0 4px 14px rgba(39,174,96,.3); margin-top:.5rem;
+}
+.save-btn:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(39,174,96,.4); }
+.mf-divider { font-size:.8rem; color:#a0aec0; text-align:center; margin:.4rem 0; }
+
+/* Toast */
+.pg-toast {
+    position:fixed; bottom:20px; right:20px;
+    background:linear-gradient(135deg,#2ecc71,#27ae60); color:white;
+    padding:12px 18px; border-radius:10px; font-size:.88rem; font-weight:600;
+    box-shadow:0 8px 24px rgba(39,174,96,.35); z-index:9999;
+    transform:translateY(80px); opacity:0;
+    transition:all .3s cubic-bezier(.34,1.56,.64,1);
+    display:flex; align-items:center; gap:8px;
+}
+.pg-toast.show { transform:translateY(0); opacity:1; }
+
+/* Responsive */
+@media(max-width:600px) {
+    .hero-card { flex-direction:column; text-align:center; gap:1rem; }
+    .hero-edit-btn { align-self:center; }
+    .mf-row { grid-template-columns:1fr; }
+    .page { padding:1rem; }
+    .topbar { padding:.75rem 1rem; }
+}
+    </style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+    <div class="topbar-left">
+        <div class="topbar-logo"><i class="fas fa-shopping-cart"></i></div>
+        <a href="index.html" class="topbar-brand">FreshMart</a>
+    </div>
+    <div class="topbar-right">
+        <a href="orders.html" class="t-btn"><i class="fas fa-shopping-bag"></i> My Orders</a>
+        <a href="index.html" class="t-btn"><i class="fas fa-store"></i> Shop</a>
+        <button type="button" class="t-btn red" id="logoutBtn">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+</header>
+
+<div class="page">
+
+    <!-- HERO CARD -->
+    <div class="hero-card">
+        <div class="hero-avatar" id="heroAvatar">U</div>
+        <div class="hero-info">
+            <h2 id="heroName">Loading...</h2>
+            <p id="heroEmail"><i class="fas fa-envelope"></i> —</p>
+            <small id="heroJoined"><i class="fas fa-calendar"></i> Member of FreshMart</small>
+        </div>
+        <button type="button" class="hero-edit-btn" onclick="openEditModal()">
+            <i class="fas fa-edit"></i> Edit Profile
+        </button>
+    </div>
+
+    <!-- PERSONAL INFO -->
+    <div class="info-section">
+        <div class="info-section-head">
+            <h3><i class="fas fa-user"></i> Personal Information</h3>
+            <button type="button" class="edit-btn" onclick="openEditModal()">
+                <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+        </div>
+        <div class="info-section-body" id="personalInfo"></div>
+    </div>
+
+    <!-- CONTACT INFO -->
+    <div class="info-section">
+        <div class="info-section-head">
+            <h3><i class="fas fa-phone"></i> Contact Details</h3>
+            <button type="button" class="edit-btn" onclick="openEditModal()">
+                <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+        </div>
+        <div class="info-section-body" id="contactInfo"></div>
+    </div>
+
+    <!-- SAVED ADDRESS -->
+    <div class="info-section">
+        <div class="info-section-head">
+            <h3><i class="fas fa-map-marker-alt"></i> Saved Address</h3>
+            <button type="button" class="edit-btn" onclick="openAddressModal()">
+                <i class="fas fa-pencil-alt"></i> Edit
+            </button>
+        </div>
+        <div class="info-section-body" id="addressInfo"></div>
+    </div>
+
+    <!-- ACCOUNT INFO -->
+    <div class="info-section">
+        <div class="info-section-head">
+            <h3><i class="fas fa-shield-alt"></i> Account</h3>
+        </div>
+        <div class="info-section-body" id="accountInfo"></div>
+    </div>
+
+</div>
+
+<!-- Edit Personal/Contact Modal -->
+<div id="editModal" style="display:none"></div>
+
+<!-- Toast -->
+<div class="pg-toast" id="pgToast"></div>
+
+<script>
+// ── Auth Guard ────────────────────────────────────────────
+const ADMIN_EMAILS = ['admin@freshmart.com','hn878283@gmail.com','princenigam972@gmail.com'];
+const rawUser = localStorage.getItem('fm_user');
+if (!rawUser) { window.location.href = 'login.html'; }
+const sessionUser = JSON.parse(rawUser || '{}');
+if (ADMIN_EMAILS.includes(sessionUser.email?.toLowerCase())) {
+    window.location.href = 'admin.html';
+}
+
+// ── Helpers ───────────────────────────────────────────────
+const getProfile  = () => JSON.parse(localStorage.getItem('fm_profile_' + sessionUser.email) || '{}');
+const saveProfile = (data) => localStorage.setItem('fm_profile_' + sessionUser.email, JSON.stringify(data));
+const getOrders   = () => JSON.parse(localStorage.getItem('fm_orders') || '[]')
+                            .filter(o => o.customer?.email === sessionUser.email);
+const getUsers    = () => JSON.parse(localStorage.getItem('fm_users') || '[]');
+
+function toast(msg, type = 'success') {
+    const el = document.getElementById('pgToast');
+    el.innerHTML = `<i class="fas fa-${type==='success'?'check-circle':'exclamation-circle'}"></i> ${msg}`;
+    el.className = `pg-toast show`;
+    clearTimeout(el._t);
+    el._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+function infoRow(iconClass, iconName, label, value) {
+    const isEmpty = !value || value === 'Not set';
+    return `
+    <div class="info-row">
+        <div class="info-icon ${iconClass}"><i class="fas fa-${iconName}"></i></div>
+        <div>
+            <div class="info-label">${label}</div>
+            <div class="info-value ${isEmpty ? 'empty' : ''}">${isEmpty ? 'Not provided' : value}</div>
+        </div>
+    </div>`;
+}
+
+// ── Render Page ───────────────────────────────────────────
+function renderProfile() {
+    // Merge signup data + saved profile data
+    const users       = getUsers();
+    const signupData  = users.find(u => u.email?.toLowerCase() === sessionUser.email?.toLowerCase()) || {};
+    const profileData = getProfile();
+
+    const firstName = profileData.firstName || signupData.firstName || sessionUser.name?.split(' ')[0] || '';
+    const lastName  = profileData.lastName  || signupData.lastName  || sessionUser.name?.split(' ')[1] || '';
+    const fullName  = (firstName + ' ' + lastName).trim() || sessionUser.name || 'User';
+    const email     = sessionUser.email || '';
+    const phone     = profileData.phone || signupData.phone || '';
+    const dob       = profileData.dob   || signupData.dob   || '';
+    const gender    = profileData.gender || '';
+    const city      = profileData.city  || '';
+    const state     = profileData.state || '';
+
+    const initials  = fullName.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+    const myOrders  = getOrders();
+    const totalSpent = myOrders.filter(o=>o.status!=='Cancelled').reduce((s,o)=>s+o.total,0);
+
+    // Hero card
+    document.getElementById('heroAvatar').textContent  = initials;
+    document.getElementById('heroName').textContent    = fullName;
+    document.getElementById('heroEmail').innerHTML     = `<i class="fas fa-envelope" style="margin-right:5px;opacity:.75"></i> ${email}`;
+    document.getElementById('heroJoined').innerHTML    = `<i class="fas fa-shopping-bag" style="margin-right:5px;opacity:.75"></i> ${myOrders.length} orders &nbsp;•&nbsp; ₹${totalSpent.toLocaleString('en-IN')} spent`;
+
+    // Personal info
+    document.getElementById('personalInfo').innerHTML =
+        infoRow('ic-green','user','Full Name', fullName) +
+        infoRow('ic-blue','birthday-cake','Date of Birth', dob ? formatDOB(dob) : '') +
+        infoRow('ic-purple','venus-mars','Gender', gender);
+
+    // Contact info
+    document.getElementById('contactInfo').innerHTML =
+        infoRow('ic-green','envelope','Email Address', email) +
+        infoRow('ic-blue','phone','Phone Number', phone) +
+        infoRow('ic-gold','city','City', city) +
+        infoRow('ic-purple','flag','State', state);
+
+    // Saved address — from last order
+    const addrEl = document.getElementById('addressInfo');
+    const lastOrder = myOrders[0];
+    const savedAddr  = profileData.address;
+
+    if (savedAddr && savedAddr.street) {
+        addrEl.innerHTML = renderAddressBlock(savedAddr);
+    } else if (lastOrder?.address) {
+        addrEl.innerHTML = renderAddressBlock(lastOrder.address) +
+            `<p style="font-size:.78rem;color:#a0aec0;margin-top:.5rem"><i class="fas fa-info-circle"></i> From your last order</p>`;
+    } else {
+        addrEl.innerHTML = `<p class="no-addr"><i class="fas fa-map-marker-alt" style="margin-right:6px"></i>No address saved yet. Place an order to auto-save.</p>`;
+    }
+
+    // Account info
+    const memberSince = profileData.joinDate || new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+    document.getElementById('accountInfo').innerHTML = `
+        <div class="info-row">
+            <div class="info-icon ic-green"><i class="fas fa-check-circle"></i></div>
+            <div>
+                <div class="info-label">Account Status</div>
+                <div class="badge-row">
+                    <span class="acc-badge green"><i class="fas fa-check"></i> Verified</span>
+                    <span class="acc-badge blue"><i class="fas fa-user"></i> Customer</span>
+                    ${myOrders.length >= 5 ? `<span class="acc-badge gold"><i class="fas fa-star"></i> Loyal Customer</span>` : ''}
+                </div>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-icon ic-blue"><i class="fas fa-calendar-alt"></i></div>
+            <div>
+                <div class="info-label">Member Since</div>
+                <div class="info-value">${memberSince}</div>
+            </div>
+        </div>
+        <div class="info-row">
+            <div class="info-icon ic-gold"><i class="fas fa-shopping-bag"></i></div>
+            <div>
+                <div class="info-label">Total Orders</div>
+                <div class="info-value">${myOrders.length} orders &nbsp;|&nbsp; ₹${totalSpent.toLocaleString('en-IN')} spent</div>
+            </div>
+        </div>`;
+}
+
+function renderAddressBlock(a) {
+    return `
+    <div class="addr-block">
+        <div class="addr-street">${a.street}</div>
+        ${a.landmark ? `<div class="addr-landmark"><i class="fas fa-map-pin" style="margin-right:4px"></i>${a.landmark}</div>` : ''}
+        <div class="addr-city">${a.area}, ${a.city}, ${a.state}</div>
+        <div>PIN: <span class="addr-pin">${a.pincode}</span></div>
+    </div>`;
+}
+
+function formatDOB(dob) {
+    if (!dob) return '';
+    try {
+        return new Date(dob).toLocaleDateString('en-IN',{ day:'2-digit', month:'long', year:'numeric' });
+    } catch { return dob; }
+}
+
+// ── Edit Profile Modal ────────────────────────────────────
+function openEditModal() {
+    const users      = getUsers();
+    const signupData = users.find(u => u.email?.toLowerCase() === sessionUser.email?.toLowerCase()) || {};
+    const pd         = getProfile();
+
+    const fn = pd.firstName || signupData.firstName || '';
+    const ln = pd.lastName  || signupData.lastName  || '';
+    const ph = pd.phone     || signupData.phone     || '';
+    const db = pd.dob       || signupData.dob       || '';
+    const gn = pd.gender    || '';
+    const ct = pd.city      || '';
+    const st = pd.state     || '';
+
+    const modal = document.getElementById('editModal');
+    modal.style.display = 'block';
+    modal.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3><i class="fas fa-user-edit"></i> Edit Profile</h3>
+                <button type="button" class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" novalidate>
+                    <div class="mf-row">
+                        <div class="mf-field">
+                            <label for="ef_fn">First Name</label>
+                            <div class="mf-wrap"><i class="fas fa-user"></i>
+                                <input type="text" id="ef_fn" placeholder="Rahul" value="${fn}">
+                            </div>
+                        </div>
+                        <div class="mf-field">
+                            <label for="ef_ln">Last Name</label>
+                            <div class="mf-wrap"><i class="fas fa-user"></i>
+                                <input type="text" id="ef_ln" placeholder="Sharma" value="${ln}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mf-field">
+                        <label for="ef_ph">Phone Number</label>
+                        <div class="mf-wrap"><i class="fas fa-phone"></i>
+                            <input type="tel" id="ef_ph" placeholder="9876543210" value="${ph}">
+                        </div>
+                    </div>
+                    <div class="mf-row">
+                        <div class="mf-field">
+                            <label for="ef_dob">Date of Birth</label>
+                            <div class="mf-wrap"><i class="fas fa-birthday-cake"></i>
+                                <input type="date" id="ef_dob" value="${db}">
+                            </div>
+                        </div>
+                        <div class="mf-field">
+                            <label for="ef_gender">Gender</label>
+                            <div class="mf-wrap"><i class="fas fa-venus-mars"></i>
+                                <select id="ef_gender">
+                                    <option value="">Select</option>
+                                    <option value="Male"   ${gn==='Male'?'selected':''}>Male</option>
+                                    <option value="Female" ${gn==='Female'?'selected':''}>Female</option>
+                                    <option value="Other"  ${gn==='Other'?'selected':''}>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mf-row">
+                        <div class="mf-field">
+                            <label for="ef_city">City</label>
+                            <div class="mf-wrap"><i class="fas fa-city"></i>
+                                <input type="text" id="ef_city" placeholder="Greater Noida" value="${ct}">
+                            </div>
+                        </div>
+                        <div class="mf-field">
+                            <label for="ef_state">State</label>
+                            <div class="mf-wrap"><i class="fas fa-flag"></i>
+                                <select id="ef_state">
+                                    <option value="">Select State</option>
+                                    ${['Uttar Pradesh','Delhi','Maharashtra','Karnataka','Tamil Nadu','West Bengal','Rajasthan','Gujarat','Madhya Pradesh','Bihar','Punjab','Haryana','Other']
+                                      .map(s=>`<option value="${s}" ${st===s?'selected':''}>${s}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="save-btn">
+                        <i class="fas fa-save"></i> Save Changes
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById('editForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const fn = document.getElementById('ef_fn').value.trim();
+        const ln = document.getElementById('ef_ln').value.trim();
+        const ph = document.getElementById('ef_ph').value.trim();
+        const db = document.getElementById('ef_dob').value;
+        const gn = document.getElementById('ef_gender').value;
+        const ct = document.getElementById('ef_city').value.trim();
+        const st = document.getElementById('ef_state').value;
+
+        const existing = getProfile();
+        saveProfile({ ...existing, firstName:fn, lastName:ln, phone:ph, dob:db, gender:gn, city:ct, state:st, joinDate: existing.joinDate || new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) });
+
+        // Update fm_user name
+        const newName = (fn + ' ' + ln).trim() || sessionUser.name;
+        localStorage.setItem('fm_user', JSON.stringify({ ...sessionUser, name: newName }));
+
+        closeModal();
+        toast('Profile updated successfully!');
+        setTimeout(renderProfile, 100);
+    });
+}
+
+// ── Edit Address Modal ────────────────────────────────────
+function openAddressModal() {
+    const pd = getProfile();
+    const orders = getOrders();
+    const existing = pd.address || orders[0]?.address || {};
+
+    const modal = document.getElementById('editModal');
+    modal.style.display = 'block';
+    modal.innerHTML = `
+    <div class="modal-overlay" onclick="if(event.target===this)closeModal()">
+        <div class="modal-box">
+            <div class="modal-head">
+                <h3><i class="fas fa-map-marker-alt"></i> Edit Address</h3>
+                <button type="button" class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="modal-body">
+                <form id="addrForm" novalidate>
+                    <div class="mf-field">
+                        <label for="af_street">House / Flat / Street</label>
+                        <div class="mf-wrap"><i class="fas fa-home"></i>
+                            <input type="text" id="af_street" placeholder="House No. 12, Green Colony" value="${existing.street||''}">
+                        </div>
+                    </div>
+                    <div class="mf-row">
+                        <div class="mf-field">
+                            <label for="af_landmark">Landmark</label>
+                            <div class="mf-wrap"><i class="fas fa-map-pin"></i>
+                                <input type="text" id="af_landmark" placeholder="Near SBI Bank" value="${existing.landmark||''}">
+                            </div>
+                        </div>
+                        <div class="mf-field">
+                            <label for="af_area">Area / Colony</label>
+                            <div class="mf-wrap"><i class="fas fa-map"></i>
+                                <input type="text" id="af_area" placeholder="Sector 15, Noida" value="${existing.area||''}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mf-row">
+                        <div class="mf-field">
+                            <label for="af_city">City</label>
+                            <div class="mf-wrap"><i class="fas fa-city"></i>
+                                <input type="text" id="af_city" placeholder="Greater Noida" value="${existing.city||''}">
+                            </div>
+                        </div>
+                        <div class="mf-field">
+                            <label for="af_state">State</label>
+                            <div class="mf-wrap"><i class="fas fa-flag"></i>
+                                <select id="af_state">
+                                    <option value="">Select State</option>
+                                    ${['Uttar Pradesh','Delhi','Maharashtra','Karnataka','Tamil Nadu','West Bengal','Rajasthan','Gujarat','Madhya Pradesh','Bihar','Punjab','Haryana','Other']
+                                      .map(s=>`<option value="${s}" ${existing.state===s?'selected':''}>${s}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mf-field">
+                        <label for="af_pin">PIN Code</label>
+                        <div class="mf-wrap"><i class="fas fa-hashtag"></i>
+                            <input type="text" id="af_pin" placeholder="201310" maxlength="6" value="${existing.pincode||''}">
+                        </div>
+                    </div>
+                    <button type="submit" class="save-btn">
+                        <i class="fas fa-save"></i> Save Address
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>`;
+
+    document.getElementById('addrForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const street   = document.getElementById('af_street').value.trim();
+        const landmark = document.getElementById('af_landmark').value.trim();
+        const area     = document.getElementById('af_area').value.trim();
+        const city     = document.getElementById('af_city').value.trim();
+        const state    = document.getElementById('af_state').value;
+        const pincode  = document.getElementById('af_pin').value.trim();
+
+        if (!street || !city || !pincode) {
+            toast('Please fill street, city and PIN code.', 'error'); return;
+        }
+        if (!/^\d{6}$/.test(pincode)) {
+            toast('PIN code must be 6 digits.', 'error'); return;
+        }
+
+        const existing = getProfile();
+        saveProfile({ ...existing, address: { street, landmark, area, city, state, pincode } });
+        closeModal();
+        toast('Address saved!');
+        setTimeout(renderProfile, 100);
+    });
+}
+
+function closeModal() {
+    const m = document.getElementById('editModal');
+    m.style.display = 'none';
+    m.innerHTML = '';
+}
+
+// ── Logout ────────────────────────────────────────────────
+document.getElementById('logoutBtn').addEventListener('click', () => {
+    localStorage.removeItem('fm_user');
+    window.location.href = 'login.html';
+});
+
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+// ── Init ─────────────────────────────────────────────────
+renderProfile();
+</script>
+</body>
+</html>

@@ -546,13 +546,42 @@ body {
 .range-wrap {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
 }
 
 #priceRange {
     width: 130px;
     accent-color: var(--primary);
     cursor: pointer;
+}
+
+.price-step-btn {
+    width: 28px;
+    height: 28px;
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    color: var(--primary-dark);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.price-step-btn:hover {
+    background: var(--primary);
+    color: white;
+    border-color: var(--primary);
+    transform: scale(1.1);
+}
+
+.price-step-btn:active {
+    transform: scale(.95);
 }
 
 .price-badge {
@@ -1509,6 +1538,185 @@ body {
 .dashboard-link {
     background: rgba(255,255,255,.15);
 }
+
+/* ============================
+   USER DROPDOWN
+   ============================ */
+.user-dropdown-wrap {
+    position: relative;
+}
+
+.user-avatar-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,.15);
+    border: none;
+    border-radius: 50px;
+    padding: 5px 12px 5px 5px;
+    cursor: pointer;
+    transition: var(--transition);
+    color: white;
+}
+
+.user-avatar-btn:hover {
+    background: rgba(255,255,255,.28);
+}
+
+.user-avatar {
+    width: 34px;
+    height: 34px;
+    background: rgba(255,255,255,.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: .9rem;
+    color: white;
+    border: 2px solid rgba(255,255,255,.5);
+    flex-shrink: 0;
+}
+
+.user-name-label {
+    font-weight: 700;
+    font-size: .88rem;
+    color: white;
+    max-width: 90px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-caret {
+    font-size: .65rem;
+    opacity: .8;
+    transition: transform .2s;
+}
+
+.user-dropdown.open ~ .user-avatar-btn .user-caret,
+.user-avatar-btn[aria-expanded="true"] .user-caret {
+    transform: rotate(180deg);
+}
+
+/* Dropdown panel */
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 230px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 10px 40px rgba(0,0,0,.18);
+    border: 1px solid var(--border);
+    padding: 6px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px);
+    transition: all .2s ease;
+    z-index: 2000;
+}
+
+.user-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.ud-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px 8px;
+}
+
+.ud-avatar {
+    width: 38px;
+    height: 38px;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: .9rem;
+    color: white;
+    flex-shrink: 0;
+}
+
+.ud-name {
+    font-weight: 700;
+    font-size: .88rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.ud-email {
+    font-size: .74rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+}
+
+.ud-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 4px 6px;
+}
+
+.ud-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 9px;
+    font-size: .88rem;
+    font-weight: 600;
+    color: #374151;
+    text-decoration: none;
+    transition: var(--transition);
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+}
+
+.ud-item i {
+    width: 18px;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: .9rem;
+}
+
+.ud-item:hover {
+    background: #f8fffe;
+    color: var(--primary-dark);
+}
+
+.ud-item:hover i { color: var(--primary); }
+
+.ud-admin {
+    color: #1d4ed8;
+}
+
+.ud-admin i { color: #3b82f6; }
+
+.ud-admin:hover {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.ud-logout { color: #dc2626; }
+.ud-logout i { color: #ef4444; }
+.ud-logout:hover { background: #fef2f2; color: #dc2626; }
+
+.ud-hidden { display: none; }
 
 /* ============================
    CHECKOUT MODAL

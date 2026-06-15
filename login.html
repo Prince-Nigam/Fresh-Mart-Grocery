@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FreshMart - Login</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
@@ -269,7 +269,9 @@
           <div class="input-wrap">
             <i class="fas fa-envelope"></i>
             <input type="email" id="email" name="email"
-              placeholder="you@example.com" required autocomplete="username" />
+              placeholder="you@example.com" required autocomplete="username"
+              list="emailSuggestions">
+            <datalist id="emailSuggestions"></datalist>
           </div>
         </div>
 
@@ -278,7 +280,7 @@
           <div class="input-wrap">
             <i class="fas fa-lock"></i>
             <input type="password" id="password" name="password"
-              placeholder="••••••••" required autocomplete="current-password" />
+              placeholder="••••••••" required autocomplete="current-password">
           </div>
           <div class="forgot"><a href="#">Forgot password?</a></div>
         </div>
@@ -335,6 +337,30 @@
       successMsg.classList.add('show');
       errorMsg.classList.remove('show');
     }
+
+    // ── Populate email suggestions from registered users ──
+    function populateEmailSuggestions() {
+      const users = JSON.parse(localStorage.getItem('fm_users') || '[]');
+      const datalist = document.getElementById('emailSuggestions');
+      datalist.innerHTML = '';
+      users.forEach(u => {
+        const opt = document.createElement('option');
+        opt.value = u.email;
+        opt.label = u.firstName + ' ' + u.lastName;
+        datalist.appendChild(opt);
+      });
+    }
+    populateEmailSuggestions();
+
+    // Auto-fill name when email selected from suggestions
+    document.getElementById('email').addEventListener('change', function() {
+      const users = JSON.parse(localStorage.getItem('fm_users') || '[]');
+      const matched = users.find(u => u.email === this.value);
+      if (matched) {
+        // Focus password field automatically
+        document.getElementById('password').focus();
+      }
+    });
 
     form.addEventListener('submit', function(e) {
       e.preventDefault();

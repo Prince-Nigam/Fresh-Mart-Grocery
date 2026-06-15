@@ -8,7 +8,7 @@ class GroceryStore {
         this.cart            = JSON.parse(localStorage.getItem('fm_cart') || '[]');
         this.currentCategory = 'all';
         this.currentSort     = 'name';
-        this.maxPrice        = 8300;
+        this.maxPrice        = 1000;
         this.init();
     }
 
@@ -35,25 +35,56 @@ class GroceryStore {
             return;
         }
 
-        const user = JSON.parse(raw);
+        const user     = JSON.parse(raw);
         const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-
-        // Admin emails list
         const ADMIN_EMAILS = ['admin@freshmart.com', 'hn878283@gmail.com', 'princenigam972@gmail.com'];
-        const isAdmin = ADMIN_EMAILS.includes(user.email.toLowerCase());
+        const isAdmin  = ADMIN_EMAILS.includes(user.email.toLowerCase());
 
         userArea.innerHTML = `
-            <div class="user-greeting" id="userGreeting">
-                ${isAdmin
-                    ? `<a href="admin.html" class="admin-link" title="Admin Panel"><i class="fas fa-shield-alt"></i> Admin</a>`
-                    : `<a href="dashboard.html" class="admin-link dashboard-link" title="My Dashboard"><i class="fas fa-box"></i> My Orders</a>`
-                }
-                <div class="user-avatar">${initials}</div>
-                <span class="user-name">${user.name.split(' ')[0]}</span>
-                <button type="button" class="logout-btn" id="logoutBtn" aria-label="Logout">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+            <div class="user-dropdown-wrap" id="userDropdownWrap">
+                <button type="button" class="user-avatar-btn" id="userAvatarBtn" aria-label="Account menu">
+                    <div class="user-avatar">${initials}</div>
+                    <span class="user-name-label">${user.name.split(' ')[0]}</span>
+                    <i class="fas fa-chevron-down user-caret"></i>
                 </button>
+                <div class="user-dropdown" id="userDropdown">
+                    <div class="ud-header">
+                        <div class="ud-avatar">${initials}</div>
+                        <div>
+                            <div class="ud-name">${user.name}</div>
+                            <div class="ud-email">${user.email}</div>
+                        </div>
+                    </div>
+                    <div class="ud-divider"></div>
+                    ${isAdmin
+                        ? `<a href="admin.html" class="ud-item ud-admin">
+                               <i class="fas fa-shield-alt"></i> Admin Dashboard
+                           </a>
+                           <div class="ud-divider"></div>`
+                        : `<a href="orders.html" class="ud-item">
+                               <i class="fas fa-shopping-bag"></i> My Orders
+                           </a>
+                           <a href="profile.html" class="ud-item">
+                               <i class="fas fa-user"></i> My Profile
+                           </a>
+                           <div class="ud-divider"></div>`
+                    }
+                    <button type="button" class="ud-item ud-logout" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
             </div>`;
+
+        // Toggle dropdown
+        document.getElementById('userAvatarBtn').addEventListener('click', (e) => {
+            e.stopPropagation();
+            document.getElementById('userDropdown').classList.toggle('open');
+        });
+
+        // Close on outside click
+        document.addEventListener('click', () => {
+            document.getElementById('userDropdown')?.classList.remove('open');
+        });
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
             localStorage.removeItem('fm_user');
@@ -64,44 +95,53 @@ class GroceryStore {
 
     // ── Products ──────────────────────────────────────────
     loadProducts() {
-        this.products = [
-            { id: 1,  name: 'Fresh Apples',    category: 'fruits',     price: 248, unit: 'kg',     rating: 4.5, image: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400', stock: 50 },
-            { id: 2,  name: 'Bananas',          category: 'fruits',     price: 165, unit: 'dozen',  rating: 4.3, image: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=400', stock: 30 },
-            { id: 3,  name: 'Oranges',          category: 'fruits',     price: 290, unit: 'kg',     rating: 4.4, image: 'https://images.unsplash.com/photo-1580052614034-c55d20bfee3b?w=400', stock: 25 },
-            { id: 4,  name: 'Strawberries',     category: 'fruits',     price: 414, unit: '250g',   rating: 4.6, image: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400', stock: 20 },
-            { id: 5,  name: 'Grapes',           category: 'fruits',     price: 331, unit: 'kg',     rating: 4.2, image: 'https://images.unsplash.com/photo-1599819177626-c2f9c9ca6e0d?w=400', stock: 15 },
-            { id: 6,  name: 'Watermelon',       category: 'fruits',     price: 497, unit: 'piece',  rating: 4.7, image: 'https://images.unsplash.com/photo-1587049352846-4a222e784210?w=400', stock: 10 },
-            { id: 31, name: 'Mango',            category: 'fruits',     price: 380, unit: 'kg',     rating: 4.8, image: 'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=400', stock: 18 },
-            { id: 32, name: 'Pineapple',        category: 'fruits',     price: 299, unit: 'piece',  rating: 4.4, image: 'https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=400', stock: 12 },
-            { id: 7,  name: 'Carrots',          category: 'vegetables', price: 124, unit: 'kg',     rating: 4.1, image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400', stock: 40 },
-            { id: 8,  name: 'Tomatoes',         category: 'vegetables', price: 207, unit: 'kg',     rating: 4.3, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400', stock: 35 },
-            { id: 9,  name: 'Lettuce',          category: 'vegetables', price: 165, unit: 'bunch',  rating: 4.0, image: 'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=400', stock: 25 },
-            { id: 10, name: 'Broccoli',         category: 'vegetables', price: 248, unit: 'piece',  rating: 4.2, image: 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=400', stock: 20 },
-            { id: 11, name: 'Potatoes',         category: 'vegetables', price: 165, unit: 'kg',     rating: 4.4, image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400', stock: 30 },
-            { id: 12, name: 'Onions',           category: 'vegetables', price: 107, unit: 'kg',     rating: 4.1, image: 'https://images.unsplash.com/photo-1508747703725-719777637510?w=400', stock: 45 },
-            { id: 33, name: 'Spinach',          category: 'vegetables', price: 99,  unit: 'bunch',  rating: 4.3, image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400', stock: 22 },
-            { id: 34, name: 'Bell Pepper',      category: 'vegetables', price: 280, unit: 'pack',   rating: 4.2, image: 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400', stock: 18 },
-            { id: 13, name: 'Fresh Milk',       category: 'dairy',      price: 290, unit: 'litre',  rating: 4.5, image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400', stock: 20 },
-            { id: 14, name: 'Cheese',           category: 'dairy',      price: 414, unit: '200g',   rating: 4.3, image: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400', stock: 15 },
-            { id: 15, name: 'Yogurt',           category: 'dairy',      price: 248, unit: '400g',   rating: 4.2, image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400', stock: 25 },
-            { id: 16, name: 'Butter',           category: 'dairy',      price: 331, unit: '100g',   rating: 4.4, image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400', stock: 18 },
-            { id: 17, name: 'Eggs',             category: 'dairy',      price: 207, unit: '12 pcs', rating: 4.6, image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400', stock: 30 },
-            { id: 18, name: 'Chicken Breast',   category: 'meat',       price: 580, unit: 'kg',     rating: 4.5, image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400', stock: 12 },
-            { id: 19, name: 'Ground Beef',      category: 'meat',       price: 497, unit: '500g',   rating: 4.3, image: 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400', stock: 10 },
-            { id: 20, name: 'Salmon Fillet',    category: 'meat',       price: 747, unit: '500g',   rating: 4.7, image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400', stock: 8  },
-            { id: 21, name: 'Pork Chops',       category: 'meat',       price: 456, unit: 'kg',     rating: 4.2, image: 'https://images.unsplash.com/photo-1602470520998-f4a52199a3d6?w=400', stock: 15 },
-            { id: 22, name: 'Fresh Bread',      category: 'bakery',     price: 248, unit: 'loaf',   rating: 4.4, image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400', stock: 20 },
-            { id: 23, name: 'Croissants',       category: 'bakery',     price: 331, unit: '4 pcs',  rating: 4.6, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400', stock: 15 },
-            { id: 24, name: 'Muffins',          category: 'bakery',     price: 207, unit: '6 pcs',  rating: 4.3, image: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=400', stock: 18 },
-            { id: 25, name: 'Bagels',           category: 'bakery',     price: 290, unit: '4 pcs',  rating: 4.2, image: 'https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=400', stock: 12 },
-            { id: 35, name: 'Whole Wheat Roti', category: 'bakery',     price: 149, unit: '10 pcs', rating: 4.5, image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400', stock: 25 },
-            { id: 26, name: 'Orange Juice',     category: 'beverages',  price: 331, unit: '1L',     rating: 4.3, image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400', stock: 25 },
-            { id: 27, name: 'Coffee',           category: 'beverages',  price: 414, unit: '250g',   rating: 4.5, image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400', stock: 20 },
-            { id: 28, name: 'Green Tea',        category: 'beverages',  price: 248, unit: '25 bags',rating: 4.2, image: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=400', stock: 30 },
-            { id: 29, name: 'Sparkling Water',  category: 'beverages',  price: 165, unit: '1L',     rating: 4.1, image: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=400', stock: 35 },
-            { id: 30, name: 'Energy Drink',     category: 'beverages',  price: 207, unit: '250ml',  rating: 3.9, image: 'https://images.unsplash.com/photo-1622543925917-763c34f6a1a7?w=400', stock: 22 },
-            { id: 36, name: 'Mango Lassi',      category: 'beverages',  price: 199, unit: '500ml',  rating: 4.6, image: 'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400', stock: 16 }
+        // Base products (hardcoded)
+        const baseProducts = [
+            { id: 1,  name: 'Fresh Apples',    category: 'fruits',     price: 248, unit: 'kg',      rating: 4.5, image: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=400', stock: 50 },
+            { id: 2,  name: 'Bananas',          category: 'fruits',     price: 165, unit: 'dozen',   rating: 4.3, image: 'https://images.unsplash.com/photo-1603833665858-e61d17a86224?w=400', stock: 30 },
+            { id: 3,  name: 'Oranges',          category: 'fruits',     price: 290, unit: 'kg',      rating: 4.4, image: 'https://images.unsplash.com/photo-1580052614034-c55d20bfee3b?w=400', stock: 25 },
+            { id: 4,  name: 'Strawberries',     category: 'fruits',     price: 414, unit: '250g',    rating: 4.6, image: 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?w=400', stock: 20 },
+            { id: 5,  name: 'Grapes',           category: 'fruits',     price: 331, unit: 'kg',      rating: 4.2, image: 'https://images.unsplash.com/photo-1599819177626-c2f9c9ca6e0d?w=400', stock: 15 },
+            { id: 6,  name: 'Watermelon',       category: 'fruits',     price: 497, unit: 'piece',   rating: 4.7, image: 'https://images.unsplash.com/photo-1587049352846-4a222e784210?w=400', stock: 10 },
+            { id: 31, name: 'Mango',            category: 'fruits',     price: 380, unit: 'kg',      rating: 4.8, image: 'https://images.unsplash.com/photo-1601493700631-2b16ec4b4716?w=400', stock: 18 },
+            { id: 32, name: 'Pineapple',        category: 'fruits',     price: 299, unit: 'piece',   rating: 4.4, image: 'https://images.unsplash.com/photo-1571575173700-afb9492e6a50?w=400', stock: 12 },
+            { id: 7,  name: 'Carrots',          category: 'vegetables', price: 124, unit: 'kg',      rating: 4.1, image: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=400', stock: 40 },
+            { id: 8,  name: 'Tomatoes',         category: 'vegetables', price: 207, unit: 'kg',      rating: 4.3, image: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?w=400', stock: 35 },
+            { id: 9,  name: 'Lettuce',          category: 'vegetables', price: 165, unit: 'bunch',   rating: 4.0, image: 'https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=400', stock: 25 },
+            { id: 10, name: 'Broccoli',         category: 'vegetables', price: 248, unit: 'piece',   rating: 4.2, image: 'https://images.unsplash.com/photo-1459411621453-7b03977f4bfc?w=400', stock: 20 },
+            { id: 11, name: 'Potatoes',         category: 'vegetables', price: 165, unit: 'kg',      rating: 4.4, image: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400', stock: 30 },
+            { id: 12, name: 'Onions',           category: 'vegetables', price: 107, unit: 'kg',      rating: 4.1, image: 'https://images.unsplash.com/photo-1508747703725-719777637510?w=400', stock: 45 },
+            { id: 33, name: 'Spinach',          category: 'vegetables', price: 99,  unit: 'bunch',   rating: 4.3, image: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?w=400', stock: 22 },
+            { id: 34, name: 'Bell Pepper',      category: 'vegetables', price: 280, unit: 'pack',    rating: 4.2, image: 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=400', stock: 18 },
+            { id: 13, name: 'Fresh Milk',       category: 'dairy',      price: 290, unit: 'litre',   rating: 4.5, image: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400', stock: 20 },
+            { id: 14, name: 'Cheese',           category: 'dairy',      price: 414, unit: '200g',    rating: 4.3, image: 'https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=400', stock: 15 },
+            { id: 15, name: 'Yogurt',           category: 'dairy',      price: 248, unit: '400g',    rating: 4.2, image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=400', stock: 25 },
+            { id: 16, name: 'Butter',           category: 'dairy',      price: 331, unit: '100g',    rating: 4.4, image: 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400', stock: 18 },
+            { id: 17, name: 'Eggs',             category: 'dairy',      price: 207, unit: '12 pcs',  rating: 4.6, image: 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=400', stock: 30 },
+            { id: 18, name: 'Chicken Breast',   category: 'meat',       price: 580, unit: 'kg',      rating: 4.5, image: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?w=400', stock: 12 },
+            { id: 19, name: 'Ground Beef',      category: 'meat',       price: 497, unit: '500g',    rating: 4.3, image: 'https://images.unsplash.com/photo-1603048588665-791ca8aea617?w=400', stock: 10 },
+            { id: 20, name: 'Salmon Fillet',    category: 'meat',       price: 747, unit: '500g',    rating: 4.7, image: 'https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?w=400', stock: 8  },
+            { id: 21, name: 'Pork Chops',       category: 'meat',       price: 456, unit: 'kg',      rating: 4.2, image: 'https://images.unsplash.com/photo-1602470520998-f4a52199a3d6?w=400', stock: 15 },
+            { id: 22, name: 'Fresh Bread',      category: 'bakery',     price: 248, unit: 'loaf',    rating: 4.4, image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=400', stock: 20 },
+            { id: 23, name: 'Croissants',       category: 'bakery',     price: 331, unit: '4 pcs',   rating: 4.6, image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400', stock: 15 },
+            { id: 24, name: 'Muffins',          category: 'bakery',     price: 207, unit: '6 pcs',   rating: 4.3, image: 'https://images.unsplash.com/photo-1607958996333-41aef7caefaa?w=400', stock: 18 },
+            { id: 25, name: 'Bagels',           category: 'bakery',     price: 290, unit: '4 pcs',   rating: 4.2, image: 'https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=400', stock: 12 },
+            { id: 35, name: 'Whole Wheat Roti', category: 'bakery',     price: 149, unit: '10 pcs',  rating: 4.5, image: 'https://images.unsplash.com/photo-1565299585323-38d6b0865b47?w=400', stock: 25 },
+            { id: 26, name: 'Orange Juice',     category: 'beverages',  price: 331, unit: '1L',      rating: 4.3, image: 'https://images.unsplash.com/photo-1600271886742-f049cd451bba?w=400', stock: 25 },
+            { id: 27, name: 'Coffee',           category: 'beverages',  price: 414, unit: '250g',    rating: 4.5, image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=400', stock: 20 },
+            { id: 28, name: 'Green Tea',        category: 'beverages',  price: 248, unit: '25 bags', rating: 4.2, image: 'https://images.unsplash.com/photo-1564890369478-c89ca6d9cde9?w=400', stock: 30 },
+            { id: 29, name: 'Sparkling Water',  category: 'beverages',  price: 165, unit: '1L',      rating: 4.1, image: 'https://images.unsplash.com/photo-1523362628745-0c100150b504?w=400', stock: 35 },
+            { id: 30, name: 'Energy Drink',     category: 'beverages',  price: 207, unit: '250ml',   rating: 3.9, image: 'https://images.unsplash.com/photo-1622543925917-763c34f6a1a7?w=400', stock: 22 },
+            { id: 36, name: 'Mango Lassi',      category: 'beverages',  price: 199, unit: '500ml',   rating: 4.6, image: 'https://images.unsplash.com/photo-1553361371-9b22f78e8b1d?w=400', stock: 16 }
         ];
+
+        // Merge with admin-managed products from localStorage
+        const deletedIds     = JSON.parse(localStorage.getItem('fm_deleted_products') || '[]');
+        const customProducts = JSON.parse(localStorage.getItem('fm_custom_products')  || '[]');
+
+        // Filter out deleted/edited base products, then add custom ones
+        const filteredBase = baseProducts.filter(p => !deletedIds.includes(p.id));
+        this.products = [...filteredBase, ...customProducts];
     }
 
     // ── Events ────────────────────────────────────────────
@@ -131,10 +171,24 @@ class GroceryStore {
         const priceRange = document.getElementById('priceRange');
         const priceValue = document.getElementById('priceValue');
         if (priceRange && priceValue) {
-            priceRange.addEventListener('input', e => {
-                this.maxPrice = parseFloat(e.target.value);
-                priceValue.textContent = `₹${this.maxPrice.toLocaleString('en-IN')}`;
+            const updatePrice = (val) => {
+                val = Math.max(1, Math.min(1000, val));
+                this.maxPrice = val;
+                priceRange.value = val;
+                priceValue.textContent = `₹${val}`;
                 this.renderProducts();
+            };
+
+            priceRange.addEventListener('input', e => {
+                updatePrice(parseInt(e.target.value));
+            });
+
+            document.getElementById('priceDecrBtn')?.addEventListener('click', () => {
+                updatePrice(this.maxPrice - 50);
+            });
+
+            document.getElementById('priceIncrBtn')?.addEventListener('click', () => {
+                updatePrice(this.maxPrice + 50);
             });
         }
 
@@ -209,12 +263,19 @@ class GroceryStore {
         const inCart       = this.cart.find(i => i.id === p.id);
         const isLowStock   = p.stock > 0 && p.stock <= 5;
         const isOutOfStock = p.stock === 0;
+        // Only show img tag if image URL is non-empty
+        const hasImage = p.image && p.image.trim() !== '';
+        const imageHtml = hasImage
+            ? `<img src="${p.image}" alt="${p.name}" loading="lazy"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : '';
+        const emojiStyle = hasImage ? 'display:none' : 'display:flex';
+
         return `
         <article class="product-card">
             <div class="product-image" onclick="groceryStore.openModal(${p.id})" style="cursor:pointer">
-                <img src="${p.image}" alt="${p.name}" loading="lazy"
-                     onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                <div class="fallback-emoji" style="display:none">${this.getCategoryEmoji(p.category)}</div>
+                ${imageHtml}
+                <div class="fallback-emoji" style="${emojiStyle}">${this.getCategoryEmoji(p.category)}</div>
                 <span class="product-badge">${p.category}</span>
                 ${isOutOfStock ? '<span class="out-of-stock-badge">Out of Stock</span>' : ''}
             </div>
@@ -263,10 +324,13 @@ class GroceryStore {
         const body  = document.getElementById('modalBody');
         if (!modal || !body) return;
 
+        const hasImage = p.image && p.image.trim() !== '';
         body.innerHTML = `
             <div class="modal-img-wrap">
-                <img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                <div class="fallback-emoji" style="display:none;font-size:6rem">${this.getCategoryEmoji(p.category)}</div>
+                ${hasImage
+                    ? `<img src="${p.image}" alt="${p.name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+                    : ''}
+                <div class="fallback-emoji" style="${hasImage ? 'display:none' : 'display:flex'};font-size:6rem">${this.getCategoryEmoji(p.category)}</div>
             </div>
             <h2 class="modal-product-name">${p.name}</h2>
             <p class="modal-category">${p.category}</p>
