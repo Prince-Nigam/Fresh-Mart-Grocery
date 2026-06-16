@@ -184,11 +184,11 @@ class GroceryStore {
             });
 
             document.getElementById('priceDecrBtn')?.addEventListener('click', () => {
-                updatePrice(this.maxPrice - 50);
+                updatePrice(this.maxPrice - 10);
             });
 
             document.getElementById('priceIncrBtn')?.addEventListener('click', () => {
-                updatePrice(this.maxPrice + 50);
+                updatePrice(this.maxPrice + 10);
             });
         }
 
