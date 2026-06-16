@@ -8,7 +8,7 @@ class GroceryStore {
         this.cart            = JSON.parse(localStorage.getItem('fm_cart') || '[]');
         this.currentCategory = 'all';
         this.currentSort     = 'name';
-        this.maxPrice        = 1000;
+        this.maxPrice        = 500;
         this.init();
     }
 
@@ -172,7 +172,7 @@ class GroceryStore {
         const priceValue = document.getElementById('priceValue');
         if (priceRange && priceValue) {
             const updatePrice = (val) => {
-                val = Math.max(1, Math.min(1000, val));
+                val = Math.max(1, Math.min(500, val));
                 this.maxPrice = val;
                 priceRange.value = val;
                 priceValue.textContent = `₹${val}`;

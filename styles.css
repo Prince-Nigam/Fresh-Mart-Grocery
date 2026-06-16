@@ -96,11 +96,11 @@ body {
 
 /* Search */
 .search-bar {
-    flex:1; max-width:520px;
+    flex:1; max-width:380px;
     display:flex; align-items:center;
-    background:white; border-radius:50px;
+    background:white; border-radius:40px;
     overflow:hidden;
-    box-shadow:0 4px 18px rgba(0,0,0,.18);
+    box-shadow:0 3px 12px rgba(0,0,0,.12);
     border:2px solid transparent;
     transition:var(--transition);
 }
@@ -118,18 +118,18 @@ body {
 .search-bar { position:relative; }
 
 .search-bar input {
-    flex:1; padding:13px 16px 13px 44px;
+    flex:1; padding:9px 12px 9px 40px;
     border:none; outline:none;
-    font-size:.97rem; color:var(--text);
-    background:transparent; font-weight:500;
+    font-size:.92rem; color:var(--text);
+    background:transparent; font-weight:600;
 }
 
 .search-btn {
     background:linear-gradient(135deg,var(--coral),var(--coral-dark));
     color:white; border:none;
-    padding:13px 22px; cursor:pointer;
-    transition:var(--transition); font-size:.95rem;
-    font-weight:700;
+    padding:10px 16px; cursor:pointer;
+    transition:var(--transition); font-size:.9rem;
+    font-weight:700; border-radius:28px;
 }
 
 .search-btn:hover {
@@ -473,11 +473,65 @@ body {
     box-shadow:0 0 0 3px rgba(34,197,94,.12);
 }
 
+/* Enhanced styling for the sort select to make it more aesthetic */
+#sortSelect {
+    padding:10px 40px 10px 14px;
+    border-radius:12px;
+    border:1px solid var(--border-2);
+    background:linear-gradient(180deg, var(--surface), #fbfff9);
+    box-shadow: var(--shadow-sm);
+    font-weight:700; color:var(--text-2); font-size:.92rem;
+    cursor:pointer; transition:var(--transition);
+    -webkit-appearance:none; -moz-appearance:none; appearance:none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    background-size:18px;
+}
+
+#sortSelect:focus {
+    outline:none; border-color:var(--green-dark);
+    box-shadow:0 6px 20px rgba(34,197,94,.14);
+    transform:translateY(-1px);
+}
+
 .range-wrap { display:flex; align-items:center; gap:7px; }
 
 #priceRange {
-    width:130px; accent-color:var(--green);
-    cursor:pointer;
+    width:180px; height:6px; cursor:pointer;
+    -webkit-appearance:none; appearance:none; background:linear-gradient(90deg,var(--green) 0%, var(--border-2) 0%);
+    border-radius:999px; position:relative; transition:var(--transition);
+}
+
+/* WebKit track */
+#priceRange::-webkit-slider-runnable-track {
+    height:6px; border-radius:999px;
+    background:linear-gradient(90deg,var(--green) 0%, var(--border-2) 0%);
+}
+#priceRange::-webkit-slider-thumb {
+    -webkit-appearance:none; appearance:none; margin-top:-7px;
+    width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,var(--green-light),var(--green));
+    border:4px solid white; box-shadow:0 6px 16px rgba(26,158,82,.18);
+    transition:transform .18s ease, box-shadow .18s ease;
+}
+#priceRange:active::-webkit-slider-thumb { transform:scale(1.06); box-shadow:0 10px 26px rgba(26,158,82,.22); }
+
+/* Firefox */
+#priceRange::-moz-range-track { height:6px; border-radius:999px; background:linear-gradient(90deg,var(--green) 0%, var(--border-2) 0%); }
+#priceRange::-moz-range-thumb {
+    width:20px; height:20px; border-radius:50%; background:linear-gradient(135deg,var(--green-light),var(--green));
+    border:4px solid white; box-shadow:0 6px 16px rgba(26,158,82,.18);
+}
+
+/* Show filled portion using background-size updated via JS — fallback gradient */
+#priceRange[style] { background-size: var(--fill, 100%) 100%; }
+
+.price-badge {
+    background:linear-gradient(135deg,#ffffff, #f6fff6);
+    border:1px solid var(--border-2);
+    padding:4px 8px; border-radius:8px; font-weight:800; color:var(--green-dark);
+    box-shadow:var(--shadow-sm); font-size:.84rem; display:inline-block;
+    min-width:56px; text-align:center; line-height:1.1;
 }
 
 .price-step-btn {
