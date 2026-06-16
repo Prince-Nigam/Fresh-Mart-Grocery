@@ -174,6 +174,13 @@
     }
     .forgot a:hover { text-decoration: underline; }
 
+    /* Forgot password modal */
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.45); align-items: center; justify-content: center; z-index: 60; }
+    .modal.show { display: flex; }
+    .modal-content { background: var(--card); border-radius: 12px; padding: 1.25rem; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,.25); border: 1px solid var(--border); }
+    .modal-content h3 { margin-bottom: .5rem; }
+    .modal-actions { display:flex; gap:8px; margin-top:12px; }
+
     /* Buttons */
     .btn-primary {
       width: 100%;
@@ -282,14 +289,28 @@
             <input type="password" id="password" name="password"
               placeholder="••••••••" required autocomplete="current-password">
           </div>
-          <div class="forgot"><a href="#">Forgot password?</a></div>
+          <div class="forgot"><a href="#" id="forgotLink">Forgot password?</a></div>
         </div>
 
         <button type="submit" class="btn-primary" id="loginBtn">
-          <i class="fas fa-sign-in-alt"></i> Sign In
+          <i class="fas fa-sign-in-alt"></i> Login
         </button>
 
       </form>
+
+      <!-- Forgot password modal -->
+      <div id="forgotModal" class="modal" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
+          <h3 id="forgotTitle">Forgot password</h3>
+          <p style="color:var(--muted);font-size:.95rem;margin-bottom:.75rem;">Enter your account email. We'll show a test reset message for this demo.</p>
+          <input id="forgotEmail" type="email" placeholder="you@example.com" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;background:#fafafa;margin-bottom:.5rem;">
+          <div id="forgotMsg" style="display:none;padding:10px;border-radius:8px;margin-top:6px;font-size:.95rem;"></div>
+          <div class="modal-actions">
+            <button id="forgotSend" class="btn-secondary">Send reset</button>
+            <button id="forgotClose" class="btn-primary">Close</button>
+          </div>
+        </div>
+      </div>
 
       <div class="divider">or</div>
 
@@ -307,24 +328,32 @@
   <script>
     // ── Admin emails list ──
     const ADMIN_EMAILS = [
-      'admin@freshmart.com',
-      'hn878283@gmail.com',
-      'princenigam972@gmail.com'
+      'hn878283@gmail.com'
     ];
 
-    // If already logged in, redirect appropriately
+    // If already logged in, we won't auto-redirect here.
+    // A session notice is shown below (after form is available)
     const existingUser = localStorage.getItem('fm_user');
-    if (existingUser) {
-      const eu = JSON.parse(existingUser);
-      window.location.href = ADMIN_EMAILS.includes(eu.email.toLowerCase())
-        ? 'admin.html'
-        : 'index.html';
-    }
 
     const form       = document.getElementById('loginForm');
     const errorMsg   = document.getElementById('errorMsg');
     const successMsg = document.getElementById('successMsg');
     const loginBtn   = document.getElementById('loginBtn');
+
+    // If the user just logged out, clear form fields to prevent browser autofill showing the email
+    if (sessionStorage.getItem('justLoggedOut')) {
+      setTimeout(() => {
+        try {
+          const ei = document.getElementById('email');
+          const pi = document.getElementById('password');
+          const fe = document.getElementById('forgotEmail');
+          if (ei) { ei.value = ''; ei.autocomplete = 'off'; }
+          if (pi) pi.value = '';
+          if (fe) fe.value = '';
+        } catch (err) {}
+        try { sessionStorage.removeItem('justLoggedOut'); } catch (e) {}
+      }, 120);
+    }
 
     function showError(msg) {
       errorMsg.textContent = msg;
@@ -362,6 +391,98 @@
       }
     });
 
+    // Forgot password modal handlers
+    const forgotLink = document.getElementById('forgotLink');
+    const forgotModal = document.getElementById('forgotModal');
+    const forgotClose = document.getElementById('forgotClose');
+    const forgotSend = document.getElementById('forgotSend');
+    const forgotEmail = document.getElementById('forgotEmail');
+    const forgotMsg = document.getElementById('forgotMsg');
+
+    function openForgot() { forgotModal.classList.add('show'); forgotModal.setAttribute('aria-hidden', 'false'); forgotEmail.focus(); forgotMsg.style.display='none'; }
+    function closeForgot() { forgotModal.classList.remove('show'); forgotModal.setAttribute('aria-hidden', 'true'); }
+
+    forgotLink.addEventListener('click', function(e){ e.preventDefault(); openForgot(); });
+    forgotClose.addEventListener('click', function(){ closeForgot(); });
+    forgotModal.addEventListener('click', function(e){ if (e.target === forgotModal) closeForgot(); });
+
+    forgotSend.addEventListener('click', function(){
+      const email = (forgotEmail.value || '').trim().toLowerCase();
+      if (!email) { forgotMsg.style.display='block'; forgotMsg.style.background='#fff7ed'; forgotMsg.style.border='1px solid #ffd7a3'; forgotMsg.style.color='#92400e'; forgotMsg.textContent='Please enter your email.'; return; }
+
+      // Check local users
+      const users = JSON.parse(localStorage.getItem('fm_users') || '[]');
+      const u = users.find(x => x.email.toLowerCase() === email);
+
+      // Check admin accounts (demo-only)
+      const ADMIN_ACCOUNTS = [
+        { email: 'admin@freshmart.com',     password: 'admin123' },
+        { email: 'hn878283@gmail.com',      password: 'admin123' },
+        { email: 'princenigam972@gmail.com', password: 'admin123' }
+      ];
+      const a = ADMIN_ACCOUNTS.find(x => x.email.toLowerCase() === email);
+
+      if (!u && !a) {
+        forgotMsg.style.display='block'; forgotMsg.style.background='#fef2f2'; forgotMsg.style.border='1px solid #fecaca'; forgotMsg.style.color='#991b1b'; forgotMsg.textContent='No account found with that email.'; return;
+      }
+
+      // For this demo, show the existing password (in real apps you'd email a reset link)
+      const pwd = u ? u.password : (a ? a.password : undefined);
+      forgotMsg.style.display='block'; forgotMsg.style.background='#f0fdf4'; forgotMsg.style.border='1px solid #bbf7d0'; forgotMsg.style.color='#065f46';
+      forgotMsg.innerHTML = `If this were a live system we'd send a reset link. For testing, the password is: <strong>${pwd}</strong>`;
+    });
+
+    // Reusable session notice UI (show continue + logout)
+    function showSessionNotice(eu) {
+      if (!eu) return;
+      const isAdmin = ADMIN_EMAILS.includes((eu.email || '').toLowerCase());
+      // Remove existing notice if present
+      const existing = document.getElementById('sessionNotice');
+      if (existing) existing.remove();
+
+      const notice = document.createElement('div');
+      notice.className = 'success-msg show';
+      notice.id = 'sessionNotice';
+      notice.style.marginBottom = '1rem';
+      notice.innerHTML = `Signed in as <strong>${eu.name || eu.email}</strong>`;
+
+      const wrapper = document.createElement('div');
+      wrapper.style.display = 'flex';
+      wrapper.style.gap = '8px';
+      wrapper.style.marginTop = '8px';
+
+      // Only show admin panel button for admins; do NOT show 'Open Store'
+      if (isAdmin) {
+        const cont = document.createElement('button');
+        cont.type = 'button';
+        cont.className = 'btn-secondary';
+        cont.textContent = 'Open Admin Panel';
+        cont.style.marginRight = '8px';
+        cont.onclick = () => { window.location.href = 'admin.html'; };
+        wrapper.appendChild(cont);
+      }
+
+      const logout = document.createElement('button');
+      logout.type = 'button';
+      logout.className = 'btn-primary';
+      logout.textContent = 'Logout';
+      logout.onclick = () => {
+        // Mark that the user intentionally logged out so page can clear autofill
+        try { sessionStorage.setItem('justLoggedOut', '1'); } catch (e) {}
+        localStorage.removeItem('fm_user');
+        sessionStorage.removeItem('fm_admin');
+        location.reload();
+      };
+
+      wrapper.appendChild(logout);
+      notice.appendChild(wrapper);
+      document.querySelector('.card').insertBefore(notice, form);
+    }
+
+    if (existingUser) {
+      try { showSessionNotice(JSON.parse(existingUser)); } catch (e) { /* ignore */ }
+    }
+
     form.addEventListener('submit', function(e) {
       e.preventDefault();
 
@@ -396,11 +517,11 @@
         sessionStorage.setItem('fm_admin', JSON.stringify({ email: adminAccount.email, name: adminAccount.name + ' ' + adminAccount.lastName, password: adminAccount.password }));
         localStorage.setItem('fm_user', JSON.stringify({ name: adminAccount.name + (adminAccount.lastName ? ' ' + adminAccount.lastName : ''), email: adminAccount.email }));
 
-        loginBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Opening Admin Panel...';
+        loginBtn.innerHTML = '<i class="fas fa-shield-alt"></i> Signed In';
         loginBtn.style.background = 'linear-gradient(135deg,#2563eb,#1d4ed8)';
         showSuccess('Admin login successful! Redirecting to Admin Dashboard...');
-
-        setTimeout(() => { window.location.href = 'admin.html'; }, 900);
+        localStorage.setItem('fm_user', JSON.stringify({ name: adminAccount.name + (adminAccount.lastName ? ' ' + adminAccount.lastName : ''), email: adminAccount.email }));
+        setTimeout(() => { window.location.href = 'admin.html'; }, 700);
 
       } else {
         // ── Normal user login ────────────────────────
@@ -419,9 +540,9 @@
 
         loginBtn.innerHTML = '<i class="fas fa-check"></i> Signed In!';
         loginBtn.style.background = 'linear-gradient(135deg,#16a34a,#15803d)';
-        showSuccess('Login successful! Redirecting...');
-
-        setTimeout(() => { window.location.href = 'index.html'; }, 900);
+        showSuccess('Login successful! Redirecting to Store...');
+        localStorage.setItem('fm_user', JSON.stringify({ name: user.firstName + ' ' + user.lastName, email: user.email }));
+        setTimeout(() => { window.location.href = 'index.html'; }, 700);
       }
     });
   </script>

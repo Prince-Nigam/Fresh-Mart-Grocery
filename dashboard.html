@@ -369,7 +369,7 @@ tbody tr:last-child td { border-bottom:none; }
 
 <script>
 // ── Auth guard ────────────────────────────────────────────
-const ADMIN_EMAILS = ['admin@freshmart.com','hn878283@gmail.com','princenigam972@gmail.com'];
+const ADMIN_EMAILS = ['hn878283@gmail.com'];
 const rawUser = localStorage.getItem('fm_user');
 
 if (!rawUser) {
@@ -584,6 +584,7 @@ function closeDetail() {
 
 // ── Logout ────────────────────────────────────────────────
 document.getElementById('logoutBtn').addEventListener('click', () => {
+    try { sessionStorage.setItem('justLoggedOut', '1'); } catch (e) {}
     localStorage.removeItem('fm_user');
     window.location.href = 'login.html';
 });

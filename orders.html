@@ -39,7 +39,7 @@ body {
 .topbar-brand { font-size:1.2rem; font-weight:800; color:white; text-decoration:none; }
 .topbar-right { display:flex; align-items:center; gap:8px; }
 .t-btn {
-    background:rgba(255,255,255,.2); color:white; border:none;
+    background:rgba(255,255,255,.2); color:var(--text); border:none;
     padding:7px 14px; border-radius:8px; font-size:.85rem; font-weight:600;
     cursor:pointer; text-decoration:none;
     display:flex; align-items:center; gap:6px; transition:all .2s;
@@ -302,7 +302,7 @@ body {
 
 <script>
 // ── Auth Guard ────────────────────────────────────────────
-const ADMIN_EMAILS = ['admin@freshmart.com','hn878283@gmail.com','princenigam972@gmail.com'];
+const ADMIN_EMAILS = ['hn878283@gmail.com'];
 const rawUser = localStorage.getItem('fm_user');
 if (!rawUser) { window.location.href = 'login.html'; }
 const user = JSON.parse(rawUser || '{}');
@@ -493,6 +493,7 @@ function closeDetail() {
 
 // ── Logout ────────────────────────────────────────────────
 document.getElementById('logoutBtn').addEventListener('click', () => {
+    try { sessionStorage.setItem('justLoggedOut', '1'); } catch (e) {}
     localStorage.removeItem('fm_user');
     window.location.href = 'login.html';
 });

@@ -41,6 +41,24 @@
     --transition:   all .28s cubic-bezier(.4,0,.2,1);
 }
 
+/* Dark theme overrides */
+:root[data-theme="dark"] {
+    --bg:           #0b0d0f;
+    --surface:      #0f1113;
+    --text:         #e6eef0;
+    --text-2:       #cfe8dd;
+    --text-muted:   #94a3b8;
+    --border:       #111317;
+    --border-2:     #1a2226;
+    --green:        #21b573;
+    --green-dark:   #14a165;
+    --green-light:  #42c57f;
+    --bg-overlay:   rgba(0,0,0,.6);
+}
+
+/* Support toggling via attribute on html element */
+html[data-theme="dark"] body { background:var(--bg); color:var(--text); }
+
 html { scroll-behavior:smooth; }
 
 body {
@@ -138,6 +156,11 @@ body {
 
 /* Header actions */
 .header-actions { display:flex; align-items:center; gap:16px; }
+
+/* Theme toggle button */
+.theme-toggle { display:inline-flex; align-items:center; gap:8px; cursor:pointer; background:transparent; border:1.5px solid rgba(255,255,255,.12); padding:8px 10px; border-radius:10px; color:white; transition:var(--transition); }
+.theme-toggle i { width:18px; height:18px; display:inline-flex; align-items:center; justify-content:center; }
+.theme-toggle:hover { transform:translateY(-2px); }
 
 .cart-icon {
     position:relative; cursor:pointer;
@@ -1348,7 +1371,7 @@ body {
 }
 
 .user-name-label {
-    font-weight:800; font-size:.88rem; color:white;
+    font-weight:800; font-size:.88rem; color:var(--text);
     max-width:90px; overflow:hidden;
     text-overflow:ellipsis; white-space:nowrap;
 }

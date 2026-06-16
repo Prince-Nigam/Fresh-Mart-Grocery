@@ -19,6 +19,25 @@ class GroceryStore {
         this.renderProducts();
         this.updateCartUI();
         this.setupUserArea();
+        this.setupTheme();
+    }
+
+    // ── Theme ──────────────────────────────────────────────
+    setupTheme() {
+        const saved = localStorage.getItem('fm_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+        const toggle = document.getElementById('themeToggle');
+        const icon   = document.getElementById('themeToggleIcon');
+        if (icon) icon.className = saved === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+        if (toggle) {
+            toggle.addEventListener('click', () => {
+                const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+                const next = current === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', next);
+                localStorage.setItem('fm_theme', next);
+                if (icon) icon.className = next === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            });
+        }
     }
 
     // ── Auth header area ──────────────────────────────────
@@ -37,7 +56,7 @@ class GroceryStore {
 
         const user     = JSON.parse(raw);
         const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        const ADMIN_EMAILS = ['admin@freshmart.com', 'hn878283@gmail.com', 'princenigam972@gmail.com'];
+        const ADMIN_EMAILS = ['hn878283@gmail.com'];
         const isAdmin  = ADMIN_EMAILS.includes(user.email.toLowerCase());
 
         userArea.innerHTML = `
@@ -87,6 +106,7 @@ class GroceryStore {
         });
 
         document.getElementById('logoutBtn').addEventListener('click', () => {
+            try { sessionStorage.setItem('justLoggedOut', '1'); } catch (e) {}
             localStorage.removeItem('fm_user');
             this.showNotification('Logged out successfully!', 'success');
             setTimeout(() => window.location.reload(), 800);
