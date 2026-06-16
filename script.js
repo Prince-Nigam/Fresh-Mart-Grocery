@@ -211,7 +211,7 @@ class GroceryStore {
     // ── Category / Search ─────────────────────────────────
     filterByCategory(category) {
         this.currentCategory = category;
-        const labels = { all:'All Products', fruits:'🍎 Fruits', vegetables:'🥕 Vegetables', dairy:'🥛 Dairy', meat:'🍗 Meat & Fish', bakery:'🍞 Bakery', beverages:'☕ Beverages' };
+        const labels = { all:'All Products', breakfast:'🍳 Breakfast', fruits:'🍎 Fruits', vegetables:'🥕 Vegetables', dairy:'🥛 Dairy', meat:'🍗 Meat & Fish', bakery:'🍞 Bakery', beverages:'☕ Beverages' };
         const title = document.getElementById('sectionTitle');
         if (title) title.textContent = labels[category] || 'Products';
         this.renderProducts();
