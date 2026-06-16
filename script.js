@@ -155,11 +155,23 @@ class GroceryStore {
         });
 
         const searchInput = document.getElementById('searchInput');
+        const searchButton = document.querySelector('.search-btn');
         if (searchInput) {
             let t;
             searchInput.addEventListener('input', e => {
                 clearTimeout(t);
                 t = setTimeout(() => this.searchProducts(e.target.value), 200);
+            });
+            searchInput.addEventListener('keydown', e => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    this.searchProducts(searchInput.value);
+                }
+            });
+        }
+        if (searchButton && searchInput) {
+            searchButton.addEventListener('click', () => {
+                this.searchProducts(searchInput.value);
             });
         }
 
@@ -226,6 +238,8 @@ class GroceryStore {
         if (!query.trim()) { this.renderProducts(); return; }
         const q = query.toLowerCase();
         this.renderProductCards(this.products.filter(p => p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q)));
+        const productsGrid = document.getElementById('productsGrid');
+        if (productsGrid) productsGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
     getFilteredProducts() {
