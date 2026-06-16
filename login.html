@@ -179,6 +179,9 @@
     .modal.show { display: flex; }
     .modal-content { background: var(--card); border-radius: 12px; padding: 1.25rem; width: 100%; max-width: 420px; box-shadow: 0 10px 30px rgba(0,0,0,.25); border: 1px solid var(--border); }
     .modal-content h3 { margin-bottom: .5rem; }
+    .modal-body { color: var(--muted); font-size: .95rem; margin-bottom: .75rem; }
+    .forgot-email-input { width: 100%; padding: 10px; border: 1px solid #e5e7eb; border-radius: 8px; background: #fafafa; margin-bottom: .5rem; }
+    .forgot-msg { display: none; padding: 10px; border-radius: 8px; margin-top: 6px; font-size: .95rem; }
     .modal-actions { display:flex; gap:8px; margin-top:12px; }
 
     /* Buttons */
@@ -269,14 +272,14 @@
       <div class="error-msg" id="errorMsg"></div>
       <div class="success-msg" id="successMsg"></div>
 
-      <form id="loginForm" autocomplete="on" novalidate>
+      <form id="loginForm" autocomplete="off" novalidate>
 
         <div class="field">
           <label for="email">Email Address</label>
           <div class="input-wrap">
             <i class="fas fa-envelope"></i>
             <input type="email" id="email" name="email"
-              placeholder="you@example.com" required autocomplete="username"
+              placeholder="you@example.com" required autocomplete="off"
               list="emailSuggestions">
             <datalist id="emailSuggestions"></datalist>
           </div>
@@ -287,7 +290,7 @@
           <div class="input-wrap">
             <i class="fas fa-lock"></i>
             <input type="password" id="password" name="password"
-              placeholder="••••••••" required autocomplete="current-password">
+              placeholder="••••••••" required autocomplete="new-password">
           </div>
           <div class="forgot"><a href="#" id="forgotLink">Forgot password?</a></div>
         </div>
@@ -302,9 +305,9 @@
       <div id="forgotModal" class="modal" aria-hidden="true">
         <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="forgotTitle">
           <h3 id="forgotTitle">Forgot password</h3>
-          <p style="color:var(--muted);font-size:.95rem;margin-bottom:.75rem;">Enter your account email. We'll show a test reset message for this demo.</p>
-          <input id="forgotEmail" type="email" placeholder="you@example.com" style="width:100%;padding:10px;border:1px solid #e5e7eb;border-radius:8px;background:#fafafa;margin-bottom:.5rem;">
-          <div id="forgotMsg" style="display:none;padding:10px;border-radius:8px;margin-top:6px;font-size:.95rem;"></div>
+          <p class="modal-body">Enter your account email. We'll show a test reset message for this demo.</p>
+          <input id="forgotEmail" class="forgot-email-input" type="email" placeholder="you@example.com">
+          <div id="forgotMsg" class="forgot-msg"></div>
           <div class="modal-actions">
             <button id="forgotSend" class="btn-secondary">Send reset</button>
             <button id="forgotClose" class="btn-primary">Close</button>
@@ -416,9 +419,7 @@
 
       // Check admin accounts (demo-only)
       const ADMIN_ACCOUNTS = [
-        { email: 'admin@freshmart.com',     password: 'admin123' },
-        { email: 'hn878283@gmail.com',      password: 'admin123' },
-        { email: 'princenigam972@gmail.com', password: 'admin123' }
+        { email: 'hn878283@gmail.com', password: 'admin123' }
       ];
       const a = ADMIN_ACCOUNTS.find(x => x.email.toLowerCase() === email);
 
@@ -500,9 +501,7 @@
         // ── Admin login ──────────────────────────────
         // Admin credentials are hardcoded
         const ADMIN_ACCOUNTS = [
-          { email: 'admin@freshmart.com',     password: 'admin123', name: 'Admin',  lastName: '' },
-          { email: 'hn878283@gmail.com',       password: 'admin123', name: 'HN',     lastName: 'Admin' },
-          { email: 'princenigam972@gmail.com', password: 'admin123', name: 'Prince', lastName: 'Nigam' }
+          { email: 'hn878283@gmail.com', password: 'admin123', name: 'HN', lastName: 'Admin' }
         ];
         const adminAccount = ADMIN_ACCOUNTS.find(
           a => a.email.toLowerCase() === email && a.password === password
