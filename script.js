@@ -56,7 +56,7 @@ class GroceryStore {
 
         const user     = JSON.parse(raw);
         const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-        const ADMIN_EMAILS = ['hn878283@gmail.com'];
+        const ADMIN_EMAILS = ['princenigam972@gmail.com', 'admin@freshmart.com'];
         const isAdmin  = ADMIN_EMAILS.includes(user.email.toLowerCase());
 
         userArea.innerHTML = `
