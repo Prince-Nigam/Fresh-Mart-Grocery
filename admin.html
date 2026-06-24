@@ -1037,8 +1037,26 @@ let ordersPage   = 1;
 let currentAdmin = null;
 
 // ── Helpers ───────────────────────────────────────────────
-const getOrders  = ()    => JSON.parse(localStorage.getItem('fm_orders')  || '[]');
-const saveOrders = (arr) => localStorage.setItem('fm_orders', JSON.stringify(arr));
+const getOrders  = () => {
+    try {
+        const fromLocal = JSON.parse(localStorage.getItem('fm_orders') || '[]');
+        if (Array.isArray(fromLocal)) return fromLocal;
+    } catch (e) {}
+    try {
+        const cookieValue = document.cookie
+            .split('; ')
+            .find(row => row.startsWith('fm_orders='));
+        if (cookieValue) {
+            const parsed = JSON.parse(decodeURIComponent(cookieValue.split('=').slice(1).join('=')) || '[]');
+            if (Array.isArray(parsed)) return parsed;
+        }
+    } catch (e) {}
+    return [];
+};
+const saveOrders = (arr) => {
+    localStorage.setItem('fm_orders', JSON.stringify(arr));
+    document.cookie = `fm_orders=${encodeURIComponent(JSON.stringify(arr))}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+};
 const rupee      = (n)   => '₹' + Number(n).toLocaleString('en-IN');
 const fmtDate    = (iso) => {
     const d = new Date(iso);

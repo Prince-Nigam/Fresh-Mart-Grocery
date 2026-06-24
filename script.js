@@ -12,6 +12,28 @@ class GroceryStore {
         this.init();
     }
 
+    getStoredOrders() {
+        try {
+            const fromLocal = JSON.parse(localStorage.getItem('fm_orders') || '[]');
+            if (Array.isArray(fromLocal)) return fromLocal;
+        } catch (e) {}
+        try {
+            const cookieValue = document.cookie
+                .split('; ')
+                .find(row => row.startsWith('fm_orders='));
+            if (cookieValue) {
+                const parsed = JSON.parse(decodeURIComponent(cookieValue.split('=').slice(1).join('=')) || '[]');
+                if (Array.isArray(parsed)) return parsed;
+            }
+        } catch (e) {}
+        return [];
+    }
+
+    saveStoredOrders(orders) {
+        localStorage.setItem('fm_orders', JSON.stringify(orders));
+        document.cookie = `fm_orders=${encodeURIComponent(JSON.stringify(orders))}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+    }
+
     // ── Init ──────────────────────────────────────────────
     init() {
         this.loadProducts();
@@ -708,9 +730,9 @@ class GroceryStore {
             subtotal, delivery, total
         };
 
-        const orders = JSON.parse(localStorage.getItem('fm_orders') || '[]');
+        const orders = this.getStoredOrders();
         orders.unshift(order);
-        localStorage.setItem('fm_orders', JSON.stringify(orders));
+        this.saveStoredOrders(orders);
 
         try {
             window.dispatchEvent(new CustomEvent('freshmart:orders-updated', { detail: { order } }));
