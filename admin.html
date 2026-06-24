@@ -1160,10 +1160,42 @@ document.getElementById('refreshBtn').addEventListener('click', () => { renderPa
 // ── INIT ──────────────────────────────────────────────────
 function initAdmin() {
     seedDemoOrders();
+    setupLiveRefresh();
     renderPage('dashboard');
     updateBadges();
     setupFilters();
     setupProductForm();
+}
+
+function setupLiveRefresh() {
+    if (window.__freshmartLiveRefreshBound) return;
+    window.__freshmartLiveRefreshBound = true;
+
+    const refreshAdminData = () => {
+        if (document.getElementById('adminApp')?.style.display !== 'block') return;
+        updateBadges();
+        if (currentPage) renderPage(currentPage);
+    };
+
+    window.addEventListener('storage', (event) => {
+        if (event.key === 'fm_orders' || event.key === 'fm_user') {
+            refreshAdminData();
+        }
+    });
+
+    window.addEventListener('freshmart:orders-updated', refreshAdminData);
+    if (window.BroadcastChannel) {
+        const channel = new BroadcastChannel('freshmart-orders');
+        channel.addEventListener('message', (event) => {
+            if (event.data?.type === 'orders-updated') refreshAdminData();
+        });
+        window.__freshmartOrdersChannel = channel;
+    }
+
+    window.addEventListener('focus', refreshAdminData);
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') refreshAdminData();
+    });
 }
 
 function updateBadges() {

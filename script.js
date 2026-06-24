@@ -712,6 +712,15 @@ class GroceryStore {
         orders.unshift(order);
         localStorage.setItem('fm_orders', JSON.stringify(orders));
 
+        try {
+            window.dispatchEvent(new CustomEvent('freshmart:orders-updated', { detail: { order } }));
+            if (window.BroadcastChannel) {
+                const channel = new BroadcastChannel('freshmart-orders');
+                channel.postMessage({ type: 'orders-updated', orderId: order.orderId });
+                channel.close();
+            }
+        } catch (e) {}
+
         this.cart = [];
         this.saveCart();
         this.updateCartUI();
