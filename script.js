@@ -714,6 +714,7 @@ class GroceryStore {
 
         try {
             window.dispatchEvent(new CustomEvent('freshmart:orders-updated', { detail: { order } }));
+            localStorage.setItem('freshmart:last-order-update', Date.now().toString());
             if (window.BroadcastChannel) {
                 const channel = new BroadcastChannel('freshmart-orders');
                 channel.postMessage({ type: 'orders-updated', orderId: order.orderId });

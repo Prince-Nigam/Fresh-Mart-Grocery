@@ -1178,7 +1178,7 @@ function setupLiveRefresh() {
     };
 
     window.addEventListener('storage', (event) => {
-        if (event.key === 'fm_orders' || event.key === 'fm_user') {
+        if (event.key === 'fm_orders' || event.key === 'fm_user' || event.key === 'freshmart:last-order-update') {
             refreshAdminData();
         }
     });
